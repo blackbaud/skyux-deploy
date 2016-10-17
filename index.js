@@ -12,12 +12,12 @@ const settings = require('./lib/settings');
  * @param {Object} argv
  * @returns null
  */
-const processArgv = (argv) => {
+function processArgv(argv) {
   const options = settings.getSettings(argv);
 
   logger.info('SPA Name: %s', options.name);
   logger.info('SPA Version: %s', options.version);
-  logger.info('SKYUX Version: %s', options.skyuxVersion);
+  logger.info('SKY UX Version: %s', options.skyuxVersion);
 
   switch (argv._[0]) {
     case 'deploy':
@@ -27,9 +27,9 @@ const processArgv = (argv) => {
       publish(options);
       break;
     default:
-      logger.info('Uknown sky-pages-deploy command.');
+      logger.info('Unknown sky-pages-deploy command.');
       break;
   }
-};
+}
 
 module.exports = processArgv;
