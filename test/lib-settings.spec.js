@@ -54,7 +54,8 @@ describe('skyux-deploy lib settings', () => {
     const skyuxPath = path.join(
       process.cwd(),
       'node_modules',
-      'blackbaud-skyux2',
+      '@blackbaud',
+      'skyux',
       'package.json'
     );
 
