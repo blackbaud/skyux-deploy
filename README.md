@@ -24,6 +24,7 @@ All of the following options are required and overridable via the CLI.  For exam
 | `name`                  | `null` |
 | `version`               | `version` property in `package.json` |
 | `skyuxVersion`          | `_requested.spec` in the `package.json` file in `./node_modules/blackbaud-skyux2/` |
+| `logSkyuxVersion`       | `true`  | 
 | `azureStorageAccount`   | `null`  |
 | `azureStorageAccessKey` | `null`  |
 | `azureStorageTableName` | "spa"   |

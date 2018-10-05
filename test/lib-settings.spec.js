@@ -59,7 +59,7 @@ describe('skyux-deploy lib settings', () => {
     );
   });
 
-  function setupPackageJson(_requested) {
+  function setupPackageJson(_requested, argv) {
     const skyuxInstalledPath = path.join(
       process.cwd(),
       'node_modules',
@@ -81,11 +81,35 @@ describe('skyux-deploy lib settings', () => {
     });
 
     const lib = require('../lib/settings');
-    const settings = lib.getSettings();
+    const settings = lib.getSettings(argv);
 
     expect(logger.error).not.toHaveBeenCalled();
     return settings;
   }
+
+  it('should return the default skyux version if logSkyuxVersion is set to false', () => {
+    const version = 'custom-skyux-version-npm3';
+    const settings = setupPackageJson(
+      {
+        spec: version
+      },
+      {
+        logSkyuxVersion: false
+      });
+    expect(settings.skyuxVersion).toEqual('');
+  });
+
+  it('should return the default skyux version if logSkyuxVersion is set to `false`', () => {
+    const version = 'custom-skyux-version-npm3';
+    const settings = setupPackageJson(
+      {
+        spec: version
+      },
+      {
+        logSkyuxVersion: 'false'
+      });
+    expect(settings.skyuxVersion).toEqual('');
+  });
 
   it('should read the skyux version if it is installed (npm < 5)', () => {
     const version = 'custom-skyux-version-npm3';
