@@ -96,76 +96,87 @@ describe('skyux-deploy lib deploy', () => {
     expect(assetsSettings.version).toEqual('custom-version1');
   });
 
-  it('should handle an error after calling registerEntityToBlob', (done) => {
+  it('should handle an error after calling registerEntityToBlob', async () => {
     assetsReject = 'custom-error1';
-    lib({}).catch((err) => {
-      expect(logger.error).toHaveBeenCalledWith(assetsReject);
-      expect(err).toEqual(assetsReject);
-      done();
-    });
+    let errCaught;
+
+    try {
+      await lib({});
+    } catch (e) {
+      errCaught = e;
+    }
+
+    expect(logger.error).toHaveBeenCalledWith(assetsReject);
+    expect(errCaught).toEqual(assetsReject);
   });
 
-  it('should call registerEntityToTable if registerAssetsToBlob is successful', (done) => {
+  it('should call registerEntityToTable if registerAssetsToBlob is successful', async () => {
     assetsResolve = true;
     entityResolve = true;
-    lib({
+
+    await lib({
       name: 'custom-name2',
       version: 'custom-version2',
       skyuxConfig: { test1: true },
       packageConfig: { test2: true }
-    }).then(() => {
-      expect(entity.PartitionKey).toEqual('custom-name2');
-      expect(entity.RowKey).toEqual('custom-version2');
-      expect(entity.SkyUXConfig).toEqual(JSON.stringify({ test1: true }));
-      expect(entity.PackageConfig).toEqual(JSON.stringify({ test2: true }));
-      done();
     });
+
+    expect(entity.PartitionKey).toEqual('custom-name2');
+    expect(entity.RowKey).toEqual('custom-version2');
+    expect(entity.SkyUXConfig).toEqual(JSON.stringify({ test1: true }));
+    expect(entity.PackageConfig).toEqual(JSON.stringify({ test2: true }));
 
   });
 
-  it('should handle an error after calling registerEntityToTable', (done) => {
+  it('should handle an error after calling registerEntityToTable', async () => {
     assetsResolve = true;
     entityReject = 'custom-error2';
-    lib({}).catch((err) => {
-      expect(logger.error).toHaveBeenCalledWith(entityReject);
-      expect(err).toEqual(entityReject);
-      done();
-    });
+    let errCaught;
+
+    try {
+      await lib({});
+    } catch (e) {
+      errCaught = e;
+    }
+
+    expect(logger.error).toHaveBeenCalledWith(entityReject);
+    expect(errCaught).toEqual(entityReject);
   });
 
-  it('should display a message if registerEntityToTable is successful', (done) => {
+  it('should display a message if registerEntityToTable is successful', async () => {
     assetsResolve = true;
     entityResolve = true;
-    lib({}).then(() => {
-      expect(logger.info).toHaveBeenCalledWith('Successfully registered.');
-      done();
-    });
+    await lib({});
+    expect(logger.info).toHaveBeenCalledWith('Successfully registered.');
   });
 
-  it('should concat the assets from getDistAssets and getEmittedAssets', (done) => {
+  it('should concat the assets from getDistAssets and getEmittedAssets', async () => {
     assetsResolve = true;
     entityResolve = true;
-    lib({}).then(() => {
-      expect(assets).toEqual([
-        distAsset,
-        emittedAsset
-      ]);
-      done();
-    });
+    await lib({});
+
+    expect(assets).toEqual([
+      distAsset,
+      emittedAsset
+    ]);
   });
 
-  it('should reject if there are no assets found', (done) => {
+  it('should reject if there are no assets found', async () => {
     mock('../lib/assets', {
       getDistAssets: () => ([]),
       getEmittedAssets: () => ([])
     });
 
     lib = mock.reRequire('../lib/deploy');
+    let errCaught;
 
-    lib({}).catch(err => {
-      expect(err).toBe('Unable to locate any assets to deploy.');
-      done();
-    });
+    try {
+      await lib({});
+    } catch (e) {
+      errCaught = e;
+    }
+
+    expect(errCaught).toBe('Unable to locate any assets to deploy.');
   });
 
 });

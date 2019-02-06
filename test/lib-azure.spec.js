@@ -116,19 +116,25 @@ describe('skyux-deploy lib azure', () => {
 
   describe('registerAssetsToBlob', () => {
 
-    it('should call createContainerIfNotExist and handle error', (done) => {
-      const err = 'custom-error-1';
+    it('should call createContainerIfNotExist and handle error', async () => {
       spyOn(logger, 'error');
 
+      const errCustom = 'custom-error-1';
       const settings = { blobName: 'blob-name1' };
-      lib.registerAssetsToBlob(settings, [])
-        .catch(e => {
-          expect(e).toBe(err);
-          expect(logger.error).toHaveBeenCalledWith(err);
-          done();
-        });
 
-      createContainerIfNotExistsArgs.cb(err);
+      const registerPromise = lib.registerAssetsToBlob(settings, []);
+      let errCaught;
+
+      createContainerIfNotExistsArgs.cb(errCustom);
+
+      try {
+        await registerPromise;
+      } catch (e) {
+        errCaught = e;
+      }
+
+      expect(errCaught).toBe(errCustom);
+      expect(logger.error).toHaveBeenCalledWith(errCustom);
     });
 
     it('should call createContainerIfNotExist and handle success', () => {
@@ -152,23 +158,30 @@ describe('skyux-deploy lib azure', () => {
 
     });
 
-    it('should call createBlockBlobFromText and handle error', (done) => {
+    it('should call createBlockBlobFromText and handle error', async () => {
+      spyOn(logger, 'error');
 
-      const err = 'custom-error-2';
+      const errCustom = 'custom-error-2';
       const settings = { blobName: 'blob-name2' };
       const assets = [{
         name: 'asset-name1',
         content: 'asset-content1'
       }];
 
-      spyOn(logger, 'error');
-      lib.registerAssetsToBlob(settings, assets)
-        .catch(err => {
-          expect(logger.error).toHaveBeenCalledWith(err);
-          done();
-        });
+      const registerPromsie = lib.registerAssetsToBlob(settings, assets);
+      let errCaught;
+
       createContainerIfNotExistsArgs.cb();
-      createBlockBlobFromTextArgs.cb(err);
+      createBlockBlobFromTextArgs.cb(errCustom);
+
+      try {
+        await registerPromsie;
+      } catch (e) {
+        errCaught = e;
+      }
+
+      expect(errCaught).toBe(errCustom);
+      expect(logger.error).toHaveBeenCalledWith(errCustom);
     });
 
     it('should call createBlockBlobFromLocalFile and handle success', () => {
@@ -187,42 +200,56 @@ describe('skyux-deploy lib azure', () => {
       expect(createBlockBlobFromLocalFileArgs.localFile).toEqual(assets[0].file);
     });
 
-    it('should call createBlockBlobFromLocalFile and handle error', (done) => {
+    it('should call createBlockBlobFromLocalFile and handle error', async () => {
+      spyOn(logger, 'error');
 
-      const err = 'custom-error-4';
+      const errCustom = 'custom-error-4';
       const settings = { blobName: 'blob-name4' };
       const assets = [{
         name: 'asset-name3.jpg',
         file: '/home/assets/asset-name3.jpg'
       }];
 
-      spyOn(logger, 'error');
-      lib.registerAssetsToBlob(settings, assets)
-        .catch(e => {
-          expect(e).toBe(err);
-          expect(logger.error).toHaveBeenCalledWith(err);
-          done();
-        });
+      const registerPromise = lib.registerAssetsToBlob(settings, assets);
+      let errCaught;
+
       createContainerIfNotExistsArgs.cb();
-      createBlockBlobFromLocalFileArgs.cb(err);
+      createBlockBlobFromLocalFileArgs.cb(errCustom);
+
+      try {
+        await registerPromise;
+      } catch (e) {
+        errCaught = e;
+      }
+
+      expect(errCaught).toBe(errCustom);
+      expect(logger.error).toHaveBeenCalledWith(errCustom);
     });
 
-    it('should throw an error if no assets', (done) => {
+    it('should throw an error if no assets', async () => {
       spyOn(logger, 'error');
-      lib.registerAssetsToBlob({}).catch((err) => {
-        expect(err).toEqual('Assets are required.');
-        done();
-      });
+      let errCaught;
+
+      try {
+        await lib.registerAssetsToBlob({});
+      } catch (e) {
+        errCaught = e;
+      }
+
+      expect(errCaught).toEqual('Assets are required.');
     });
 
-    it('should log an error if there was unknown asset type', (done) => {
+    it('should log an error if there was unknown asset type', async () => {
       spyOn(logger, 'error');
-      lib.registerAssetsToBlob({}, [{ type: 'unknown' }])
-        .catch(err => {
-          expect(logger.error).toHaveBeenCalledWith('Unknown asset type.');
-          done();
-        });
+
+      const registerPromise = lib.registerAssetsToBlob({}, [{ type: 'unknown' }]);
       createContainerIfNotExistsArgs.cb();
+
+      try {
+        await registerPromise;
+      } catch (e) {}
+
+      expect(logger.error).toHaveBeenCalledWith('Unknown asset type.');
     });
 
   });
@@ -239,17 +266,23 @@ describe('skyux-deploy lib azure', () => {
       expect(createTableServiceArgs.key).toEqual(settings.azureStorageAccessKey);
     });
 
-    it('should call createTableIfNotExists and handle error', (done) => {
+    it('should call createTableIfNotExists and handle error', async () => {
       spyOn(logger, 'error');
 
-      const err = 'custom-error-3';
-      lib.registerEntityToTable({}, {})
-        .catch(e => {
-          expect(e).toBe(err);
-          expect(logger.error).toHaveBeenCalledWith(err);
-          done();
-        });
-      createTableIfNotExistsArgs.cb(err);
+      const errCustom = 'custom-error-3';
+      const registerPromise = lib.registerEntityToTable({}, {});
+      let errCaught;
+
+      createTableIfNotExistsArgs.cb(errCustom);
+
+      try {
+        await registerPromise;
+      } catch (e) {
+        errCaught = e;
+      }
+
+      expect(errCaught).toBe(errCustom);
+      expect(logger.error).toHaveBeenCalledWith(errCustom);
     });
 
     it('should call insertOrReplaceEntity and handle success', () => {
@@ -267,17 +300,24 @@ describe('skyux-deploy lib azure', () => {
 
     });
 
-    it('should call insertOrReplaceEntity and handle error', (done) => {
+    it('should call insertOrReplaceEntity and handle error', async () => {
       spyOn(logger, 'error');
-      const err = 'custom-error-5';
-      lib.registerEntityToTable({}, {})
-        .catch(e => {
-          expect(e).toBe(err);
-          expect(logger.error).toHaveBeenCalledWith(err);
-          done();
-        });
+
+      const errCustom = 'custom-error-5';
+      const registerPromise = lib.registerEntityToTable({}, {});
+      let errCaught;
+
       createTableIfNotExistsArgs.cb();
-      insertOrReplaceEntityArgs.cb(err);
+      insertOrReplaceEntityArgs.cb(errCustom);
+
+      try {
+        await registerPromise;
+      } catch (e) {
+        errCaught = e;
+      }
+
+      expect(errCaught).toBe(errCustom);
+      expect(logger.error).toHaveBeenCalledWith(errCustom);
     });
 
   });
