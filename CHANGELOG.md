@@ -1,3 +1,7 @@
+# 1.5.0 (2019-04-18)
+
+- Updated dependencies. [#41](https://github.com/blackbaud/skyux-deploy/pull/41)
+
 # 1.4.0 (2019-01-25)
 
 - Added `size` property for each script stored in table storage. [#39](https://github.com/blackbaud/skyux-deploy/pull/39)
