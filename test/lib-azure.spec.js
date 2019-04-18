@@ -9,7 +9,6 @@ describe('skyux-deploy lib azure', () => {
   const logger = require('@blackbaud/skyux-logger');
 
   let lib;
-  let createBlobServiceArgs;
   let createTableServiceArgs;
   let createBlockBlobFromTextArgs;
   let createBlockBlobFromLocalFileArgs;
@@ -19,7 +18,6 @@ describe('skyux-deploy lib azure', () => {
 
   beforeEach(() => {
 
-    createBlobServiceArgs = {};
     createTableServiceArgs = {};
     createBlockBlobFromTextArgs = {};
     createBlockBlobFromLocalFileArgs = {};
@@ -28,11 +26,7 @@ describe('skyux-deploy lib azure', () => {
     insertOrReplaceEntityArgs = {};
 
     mock('azure-storage', {
-      createBlobService: (account, key) => {
-        createBlobServiceArgs = {
-          account: account,
-          key: key
-        };
+      createBlobService: () => {
 
         return {
           createContainerIfNotExists: (blobName, acl, cb) => {
@@ -116,14 +110,20 @@ describe('skyux-deploy lib azure', () => {
 
   describe('registerAssetsToBlob', () => {
 
-    it('should call createContainerIfNotExist and handle error', () => {
+    it('should call createContainerIfNotExist and handle error', (done) => {
       spyOn(logger, 'error');
 
+      const error = 'error1';
       const settings = { blobName: 'blob-name1' };
-      lib.registerAssetsToBlob(settings, []);
-      createContainerIfNotExistsArgs.cb('error1');
-      expect(logger.error).toHaveBeenCalledWith('error1');
 
+      lib.registerAssetsToBlob(settings, [])
+        .catch(err => {
+          expect(err).toBe(error);
+          expect(logger.error).toHaveBeenCalledWith(error);
+          done();
+        });
+
+      createContainerIfNotExistsArgs.cb(error);
     });
 
     it('should call createContainerIfNotExist and handle success', () => {
@@ -147,8 +147,9 @@ describe('skyux-deploy lib azure', () => {
 
     });
 
-    it('should call createBlockBlobFromText and handle error', () => {
+    it('should call createBlockBlobFromText and handle error', (done) => {
 
+      const error = 'error2';
       const settings = { blobName: 'blob-name2' };
       const assets = [{
         name: 'asset-name1',
@@ -156,11 +157,15 @@ describe('skyux-deploy lib azure', () => {
       }];
 
       spyOn(logger, 'error');
-      lib.registerAssetsToBlob(settings, assets);
-      createContainerIfNotExistsArgs.cb();
-      createBlockBlobFromTextArgs.cb('error2');
-      expect(logger.error).toHaveBeenCalledWith('error2');
+      lib.registerAssetsToBlob(settings, assets)
+        .catch(err => {
+          expect(err).toBe(error);
+          expect(logger.error).toHaveBeenCalledWith(error);
+          done();
+        });
 
+      createContainerIfNotExistsArgs.cb();
+      createBlockBlobFromTextArgs.cb(error);
     });
 
     it('should call createBlockBlobFromLocalFile and handle success', () => {
@@ -179,8 +184,9 @@ describe('skyux-deploy lib azure', () => {
       expect(createBlockBlobFromLocalFileArgs.localFile).toEqual(assets[0].file);
     });
 
-    it('should call createBlockBlobFromLocalFile and handle error', () => {
+    it('should call createBlockBlobFromLocalFile and handle error', (done) => {
 
+      const error = 'error4';
       const settings = { blobName: 'blob-name4' };
       const assets = [{
         name: 'asset-name3.jpg',
@@ -188,10 +194,14 @@ describe('skyux-deploy lib azure', () => {
       }];
 
       spyOn(logger, 'error');
-      lib.registerAssetsToBlob(settings, assets);
+      lib.registerAssetsToBlob(settings, assets)
+        .catch(err => {
+          expect(err).toBe(error);
+          expect(logger.error).toHaveBeenCalledWith(error);
+          done();
+        });
       createContainerIfNotExistsArgs.cb();
-      createBlockBlobFromLocalFileArgs.cb('error4');
-      expect(logger.error).toHaveBeenCalledWith('error4');
+      createBlockBlobFromLocalFileArgs.cb(error);
 
     });
 
@@ -203,13 +213,17 @@ describe('skyux-deploy lib azure', () => {
       });
     });
 
-    it('should log an error if there was unknown asset type', () => {
+    it('should log an error if there was unknown asset type', (done) => {
       spyOn(logger, 'error');
-      lib.registerAssetsToBlob({}, [{ type: 'unknown' }]);
+      const error = 'Unknown asset type.';
+      lib.registerAssetsToBlob({}, [{ type: 'unknown' }])
+        .catch(err => {
+          expect(err).toBe(error);
+          expect(logger.error).toHaveBeenCalledWith(error);
+          done();
+        });
       createContainerIfNotExistsArgs.cb();
-      expect(logger.error).toHaveBeenCalledWith('Unknown asset type.');
     });
-
   });
 
   describe('registerEntityToTable', () => {
@@ -224,12 +238,17 @@ describe('skyux-deploy lib azure', () => {
       expect(createTableServiceArgs.key).toEqual(settings.azureStorageAccessKey);
     });
 
-    it('should call createTableIfNotExists and handle error', () => {
+    it('should call createTableIfNotExists and handle error', (done) => {
       spyOn(logger, 'error');
 
-      lib.registerEntityToTable({}, {});
-      createTableIfNotExistsArgs.cb('error3');
-      expect(logger.error).toHaveBeenCalledWith('error3');
+      const error = 'error5';
+      lib.registerEntityToTable({}, {})
+      .catch(err => {
+        expect(err).toBe(error);
+        expect(logger.error).toHaveBeenCalledWith(error);
+        done();
+      });
+      createTableIfNotExistsArgs.cb(error);
     });
 
     it('should call insertOrReplaceEntity and handle success', () => {
@@ -247,12 +266,17 @@ describe('skyux-deploy lib azure', () => {
 
     });
 
-    it('should call insertOrReplaceEntity and handle error', () => {
+    it('should call insertOrReplaceEntity and handle error', (done) => {
       spyOn(logger, 'error');
-      lib.registerEntityToTable({}, {});
+      const error = 'error6';
+      lib.registerEntityToTable({}, {})
+        .catch(err => {
+          expect(err).toBe(error);
+          expect(logger.error).toHaveBeenCalledWith(error);
+          done();
+        });
       createTableIfNotExistsArgs.cb();
-      insertOrReplaceEntityArgs.cb('error4');
-      expect(logger.error).toHaveBeenCalledWith('error4');
+      insertOrReplaceEntityArgs.cb(error);
     });
 
   });

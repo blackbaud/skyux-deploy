@@ -23,7 +23,6 @@ describe('skyux-deploy lib deploy', () => {
   let assetsReject;
 
   let entity;
-  let entitySettings;
   let entityResolve;
   let entityReject;
 
@@ -34,7 +33,6 @@ describe('skyux-deploy lib deploy', () => {
     assetsReject = '';
 
     entity = {};
-    entitySettings = {};
     entityResolve = false;
     entityReject = '';
 
@@ -60,7 +58,6 @@ describe('skyux-deploy lib deploy', () => {
       },
 
       registerEntityToTable: (s, e) => {
-        entitySettings = s;
         entity = e;
         return new Promise((resolve, reject) => {
           if (entityResolve) {
