@@ -9,21 +9,15 @@ describe('skyux-deploy lib azure', () => {
   const logger = require('@blackbaud/skyux-logger');
 
   let lib;
-  let createTableServiceArgs;
   let createBlockBlobFromTextArgs;
   let createBlockBlobFromLocalFileArgs;
   let createContainerIfNotExistsArgs;
-  let createTableIfNotExistsArgs;
-  let insertOrReplaceEntityArgs;
 
   beforeEach(() => {
 
-    createTableServiceArgs = {};
     createBlockBlobFromTextArgs = {};
     createBlockBlobFromLocalFileArgs = {};
     createContainerIfNotExistsArgs = {};
-    createTableIfNotExistsArgs = {};
-    insertOrReplaceEntityArgs = {};
 
     mock('azure-storage', {
       createBlobService: () => {
@@ -58,30 +52,6 @@ describe('skyux-deploy lib azure', () => {
         };
       },
 
-      createTableService: (account, key) => {
-        createTableServiceArgs = {
-          account: account,
-          key: key
-        };
-
-        return {
-          createTableIfNotExists: (tableName, cb) => {
-            createTableIfNotExistsArgs = {
-              tableName: tableName,
-              cb: cb
-            };
-          },
-
-          insertOrReplaceEntity: (tableName, entity, cb) => {
-            insertOrReplaceEntityArgs = {
-              tableName: tableName,
-              entity: entity,
-              cb: cb
-            };
-          }
-        };
-      },
-
       TableUtilities: {
         entityGenerator: {
           String: () => {}
@@ -102,10 +72,6 @@ describe('skyux-deploy lib azure', () => {
 
   it('should expose a registerAssetsToBlob method', () => {
     expect(lib.registerAssetsToBlob).toBeDefined();
-  });
-
-  it('should expose a registerEntityToTable metho', () => {
-    expect(lib.registerEntityToTable).toBeDefined();
   });
 
   describe('registerAssetsToBlob', () => {
@@ -226,58 +192,4 @@ describe('skyux-deploy lib azure', () => {
     });
   });
 
-  describe('registerEntityToTable', () => {
-
-    it('should create a table service using the supplied credentials', () => {
-      const settings = {
-        azureStorageAccount: 'account2',
-        azureStorageAccessKey: 'key2'
-      };
-      lib.registerEntityToTable(settings);
-      expect(createTableServiceArgs.account).toEqual(settings.azureStorageAccount);
-      expect(createTableServiceArgs.key).toEqual(settings.azureStorageAccessKey);
-    });
-
-    it('should call createTableIfNotExists and handle error', (done) => {
-      spyOn(logger, 'error');
-
-      const error = 'error5';
-      lib.registerEntityToTable({}, {})
-      .catch(err => {
-        expect(err).toBe(error);
-        expect(logger.error).toHaveBeenCalledWith(error);
-        done();
-      });
-      createTableIfNotExistsArgs.cb(error);
-    });
-
-    it('should call insertOrReplaceEntity and handle success', () => {
-      const settings = { name: 'custom-name3' };
-
-      spyOn(logger, 'info');
-      lib.registerEntityToTable(settings, {});
-      createTableIfNotExistsArgs.cb();
-      insertOrReplaceEntityArgs.cb();
-
-      expect(logger.info).toHaveBeenCalledWith(
-        'SPA %s registered in table storage.',
-        settings.name
-      );
-
-    });
-
-    it('should call insertOrReplaceEntity and handle error', (done) => {
-      spyOn(logger, 'error');
-      const error = 'error6';
-      lib.registerEntityToTable({}, {})
-        .catch(err => {
-          expect(err).toBe(error);
-          expect(logger.error).toHaveBeenCalledWith(error);
-          done();
-        });
-      createTableIfNotExistsArgs.cb();
-      insertOrReplaceEntityArgs.cb(error);
-    });
-
-  });
 });

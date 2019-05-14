@@ -1,35 +1,31 @@
-/*jshint jasmine: true, node: true */
 'use strict';
 
 describe('skyux-deploy lib publish', () => {
 
   const mock = require('mock-require');
 
-  it('should create an entity and call registerEntityToTable', () => {
-    let settingsTest = false;
-    let entityTest = {};
+  it('should create an entity and call publishSpa', () => {
+    const portalMock = {
+      publishSpa: jasmine.createSpy('publishSpa').and.returnValue(Promise.resolve())
+    };
 
-    mock('../lib/azure', {
-      generator: {
-        String: s => s
-      },
-      registerEntityToTable: (settings, entity) => {
-        settingsTest = settings.test;
-        entityTest = entity;
-      }
-    });
+    mock('../lib/portal', portalMock);
 
     require('../lib/publish')({
+      azureStorageAccessKey: 'abc',
       name: 'custom-name',
-      version: 'custom-version',
-      test: true
+      version: 'custom-version'
     });
 
-    expect(settingsTest).toEqual(true);
-    expect(entityTest.PartitionKey).toEqual('custom-name');
-    expect(entityTest.RowKey).toEqual('__default');
-    expect(entityTest.Version).toEqual('custom-version');
-    mock.stop('../lib/azure');
+    expect(portalMock.publishSpa).toHaveBeenCalledWith(
+      'abc',
+      {
+        name: 'custom-name',
+        version: 'custom-version'
+      }
+    );
+
+    mock.stopAll();
   });
 
 });

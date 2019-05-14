@@ -8,5 +8,8 @@
   "parserOptions": {
     "sourceType": "module",
     "ecmaVersion": 2017
+  },
+  "globals": {
+    "expectAsync": "readonly"
   }
 }
