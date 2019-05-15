@@ -1,4 +1,3 @@
-/*jshint jasmine: true, node: true */
 'use strict';
 
 const logger = require('@blackbaud/skyux-logger');

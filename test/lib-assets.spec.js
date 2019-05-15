@@ -1,4 +1,3 @@
-/*jshint jasmine: true, node: true */
 'use strict';
 
 describe('skyux-deploy lib assets', () => {
