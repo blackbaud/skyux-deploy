@@ -4,14 +4,28 @@ describe('skyux-deploy lib publish', () => {
 
   const mock = require('mock-require');
 
+  const loggerInfoSuccess = 'Successfully published.';
+
+  let loggerMock;
   let publishSpaMock;
   let publishStaticMock;
   let publish;
 
+  async function callPublish(isStaticClient) {
+    return publish({
+      azureStorageAccessKey: 'abc',
+      isStaticClient: isStaticClient,
+      name: 'custom-name',
+      version: 'custom-version'
+    });
+  }
+
   beforeEach(() => {
+    loggerMock = jasmine.createSpyObj('logger', ['info', 'error', 'bobby']);
     publishSpaMock = jasmine.createSpy('publishSpa');
     publishStaticMock = jasmine.createSpy('publishStatic');
 
+    mock('@blackbaud/skyux-logger', loggerMock);
     mock('../lib/publish-spa', publishSpaMock);
     mock('../lib/publish-static', publishStaticMock);
 
@@ -22,14 +36,8 @@ describe('skyux-deploy lib publish', () => {
     mock.stopAll();
   });
 
-  it('should publish as a SPA when settings.isStaticClient = false', () => {
-    publish({
-      azureStorageAccessKey: 'abc',
-      isStaticClient: false,
-      name: 'custom-name',
-      version: 'custom-version'
-    });
-
+  it('should publish as a SPA when settings.isStaticClient = false', async () => {
+    await callPublish(false);
     expect(publishSpaMock).toHaveBeenCalledWith(
       {
         azureStorageAccessKey: 'abc',
@@ -40,16 +48,11 @@ describe('skyux-deploy lib publish', () => {
     );
 
     expect(publishStaticMock).not.toHaveBeenCalled();
+    expect(loggerMock.info).toHaveBeenCalledWith(loggerInfoSuccess);
   });
 
-  it('should publish as a static client when settings.isStaticClient = true', () => {
-    publish({
-      azureStorageAccessKey: 'abc',
-      isStaticClient: true,
-      name: 'custom-name',
-      version: 'custom-version'
-    });
-
+  it('should publish as a static client when settings.isStaticClient = true', async () => {
+    await callPublish(true);
     expect(publishStaticMock).toHaveBeenCalledWith(
       {
         azureStorageAccessKey: 'abc',
@@ -60,6 +63,35 @@ describe('skyux-deploy lib publish', () => {
     );
 
     expect(publishSpaMock).not.toHaveBeenCalled();
+    expect(loggerMock.info).toHaveBeenCalledWith(loggerInfoSuccess);
+  });
+
+  it('should log an error when settings.isStaticClient = false', async () => {
+    const error = 'some-error-happened-is-static-client-false';
+    publishSpaMock.and.callFake(() => {
+      throw error;
+    });
+
+    try {
+      await callPublish(false);
+    } catch (e) {
+      expect(e).toEqual(error);
+      expect(loggerMock.error).toHaveBeenCalledWith(error);
+    }
+  });
+
+  it('should log an error when settings.isStaticClient = true', async () => {
+    const error = 'some-error-happened-is-static-client-true';
+    publishStaticMock.and.callFake(() => {
+      throw error;
+    });
+
+    try {
+      await callPublish(true);
+    } catch (e) {
+      expect(e).toEqual(error);
+      expect(loggerMock.error).toHaveBeenCalledWith(error);
+    }
   });
 
 });
