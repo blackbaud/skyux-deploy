@@ -1,3 +1,7 @@
+# 1.6.0 (2019-05-16)
+
+- Call the new deploy and publish endpoints provided by the SPA service rather than write directly to table storage. [#43](https://github.com/blackbaud/skyux-deploy/pull/43)
+
 # 1.5.0 (2019-04-18)
 
 - Updated dependencies. [#41](https://github.com/blackbaud/skyux-deploy/pull/41)
