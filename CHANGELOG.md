@@ -1,3 +1,7 @@
+# 1.6.1 (2019-05-16)
+
+- Display any errors caught during the `publish` command. [#45](https://github.com/blackbaud/skyux-deploy/pull/45)
+
 # 1.6.0 (2019-05-16)
 
 - Call the new deploy and publish endpoints provided by the SPA service rather than write directly to table storage. [#43](https://github.com/blackbaud/skyux-deploy/pull/43)
