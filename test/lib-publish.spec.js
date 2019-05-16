@@ -21,7 +21,7 @@ describe('skyux-deploy lib publish', () => {
   }
 
   beforeEach(() => {
-    loggerMock = jasmine.createSpyObj('logger', ['info', 'error', 'bobby']);
+    loggerMock = jasmine.createSpyObj('logger', ['info', 'error']);
     publishSpaMock = jasmine.createSpy('publishSpa');
     publishStaticMock = jasmine.createSpy('publishStatic');
 
@@ -72,12 +72,8 @@ describe('skyux-deploy lib publish', () => {
       throw error;
     });
 
-    try {
-      await callPublish(false);
-    } catch (e) {
-      expect(e).toEqual(error);
-      expect(loggerMock.error).toHaveBeenCalledWith(error);
-    }
+    await expectAsync(callPublish(false)).toBeRejectedWith(error);
+    expect(loggerMock.error).toHaveBeenCalledWith(error);
   });
 
   it('should log an error when settings.isStaticClient = true', async () => {
@@ -86,12 +82,8 @@ describe('skyux-deploy lib publish', () => {
       throw error;
     });
 
-    try {
-      await callPublish(true);
-    } catch (e) {
-      expect(e).toEqual(error);
-      expect(loggerMock.error).toHaveBeenCalledWith(error);
-    }
+    await expectAsync(callPublish(true)).toBeRejectedWith(error);
+    expect(loggerMock.error).toHaveBeenCalledWith(error);
   });
 
 });
