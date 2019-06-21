@@ -94,7 +94,7 @@ describe('skyux-deploy lib deploy', () => {
 
       await lib(settings);
 
-      expect(deploySpaMock).toHaveBeenCalledWith(settings, [distAsset]);
+      expect(deploySpaMock).toHaveBeenCalledWith(settings);
       expect(deployStaticMock).not.toHaveBeenCalled();
     });
 
@@ -126,26 +126,7 @@ describe('skyux-deploy lib deploy', () => {
 
       await lib(settings);
 
-      expect(deployStaticMock).toHaveBeenCalledWith(settings, [distAsset]);
-      expect(deploySpaMock).not.toHaveBeenCalled();
-    });
-
-    it('should call deployStatic with `majorVersion-latest` if version contains `.`', async () => {
-      const settings = {
-        azureStorageAccessKey: 'abc',
-        name: 'custom-name3',
-        isStaticClient: true,
-        version: 'major.minor.patch',
-        skyuxConfig: { test1: true },
-        packageConfig: { test2: true }
-      };
-
-      const settingsLatest = Object.assign({}, settings, { version: `major-latest` });
-
-      await lib(settings);
-
-      expect(deployStaticMock).toHaveBeenCalledWith(settings, [distAsset]);
-      expect(deployStaticMock).toHaveBeenCalledWith(settingsLatest, [distAsset]);
+      expect(deployStaticMock).toHaveBeenCalledWith(settings);
       expect(deploySpaMock).not.toHaveBeenCalled();
     });
 

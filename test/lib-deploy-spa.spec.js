@@ -5,6 +5,7 @@ describe('skyux-deploy lib deploy SPA', () => {
   const mock = require('mock-require');
   const logger = require('@blackbaud/skyux-logger');
 
+  let assetsMock;
   let portalMock;
   let lib;
 
@@ -12,10 +13,22 @@ describe('skyux-deploy lib deploy SPA', () => {
     spyOn(logger, 'error');
     spyOn(logger, 'info');
 
+    assetsMock = {
+      getDistAssets: jasmine.createSpy('getDistAssets')
+        .and
+        .returnValue([
+          {
+            name: 'my-asset.js',
+            content: 'my-content'
+          }
+        ]),
+    };
+
     portalMock = {
       deploySpa: jasmine.createSpy('deploySpa').and.returnValue(Promise.resolve())
     };
 
+    mock('../lib/assets', assetsMock);
     mock('../lib/portal', portalMock);
 
     lib = mock.reRequire('../lib/deploy-spa');
@@ -33,13 +46,7 @@ describe('skyux-deploy lib deploy SPA', () => {
         version: 'custom-version2',
         skyuxConfig: { test1: true },
         packageConfig: { test2: true }
-      },
-      [
-        {
-          name: 'my-asset.js',
-          content: 'my-content'
-        }
-      ]
+      }
     );
 
     expect(portalMock.deploySpa).toHaveBeenCalledWith(

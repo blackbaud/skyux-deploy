@@ -27,5 +27,6 @@ All of the following options are required and overridable via the CLI.  For exam
 | `azureStorageAccessKey` | `null`  |
 | `azureStorageTableName` | "spa"   |
 | `isStaticClient`        | `false` |
+| `updateMajorVersion`    | `false` |
 
 `null` values are typically supplied by the CI process.
