@@ -1,6 +1,6 @@
 # 1.7.0 (2019-06-26)
 
-- Updated the `deploy` command to always record the explicit version and not update the major version for pre-releases.  [#47](https://github.com/blackbaud/skyux-deploy/pull/47)
+- Updated the deploy command to always record the explicit version but maintain the major version for pre-releases. [#47](https://github.com/blackbaud/skyux-deploy/pull/47)
 
 # 1.6.1 (2019-05-16)
 
