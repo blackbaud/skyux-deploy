@@ -141,6 +141,33 @@ describe('skyux-deploy lib assets', () => {
 
       expect(assetsWithContent[0].content).toEqual('my-custom-content3');
     });
+
+    it('should handle major version assets', () => {
+      const readFileSync = fs.readFileSync;
+
+      spyOn(glob, 'sync').and.returnValue([
+        path.join(process.cwd(), 'dist', 'bundles', 'test.umd.js')
+      ]);
+      spyOn(fs, 'readFileSync').and.callFake((file, options) => {
+        if (file.indexOf('test.umd.js') > -1) {
+          return 'my-custom-content3';
+        } else {
+          return readFileSync(file, options);
+        }
+      });
+
+      let stubs = {};
+      stubs[path.join(process.cwd(), 'dist', 'bundles', 'test.umd.js')] = [
+        {
+          name: 'custom-name.js'
+        }
+      ];
+
+      const lib = proxyquire('../lib/assets', stubs);
+      const assetsWithContent = lib.getDistAssets(true, true, '1.0.0');
+      expect(assetsWithContent[0].version).toEqual('1.0.0');
+      expect(assetsWithContent[1].version).toEqual('1');
+    });
   });
 
   describe('getEmittedAssets', () => {
