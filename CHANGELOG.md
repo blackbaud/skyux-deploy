@@ -1,6 +1,6 @@
 # 1.7.1 (2019-08-05)
 
-- Bugfix for correctly deploying major version of static assets. [#51](https://github.com/blackbaud/skyux-deploy/pull/51)
+- Fixed the `deploy` command to correctly deploy the major version of static assets. [#51](https://github.com/blackbaud/skyux-deploy/pull/51)
 
 # 1.7.0 (2019-06-26)
 
