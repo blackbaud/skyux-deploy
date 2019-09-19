@@ -1,3 +1,7 @@
+# 1.7.2 (2019-09-19)
+
+- Fixed the `deploy` command to correctly log an error if no static assets are found. [#56](https://github.com/blackbaud/skyux-deploy/pull/56)
+
 # 1.7.1 (2019-08-05)
 
 - Fixed the `deploy` command to correctly deploy the major version of static assets. [#51](https://github.com/blackbaud/skyux-deploy/pull/51)
