@@ -76,10 +76,14 @@ describe('skyux-deploy lib deploy', () => {
   });
 
   it('should reject if there are no assets found', async () => {
+    const err = 'Unable to locate any assets to deploy.';
     assetsMock.getDistAssets.and.returnValue([]);
     assetsMock.getEmittedAssets.and.returnValue([]);
 
-    await expectAsync(lib({})).toBeRejectedWith('Unable to locate any assets to deploy.');
+    const result = lib({});
+
+    await expectAsync(result).toBeRejectedWith(err);
+    expect(logger.error).toHaveBeenCalledWith(err);
   });
 
   describe('when isStaticClient = false', () => {
