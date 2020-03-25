@@ -196,6 +196,36 @@ describe('skyux-deploy lib assets', () => {
         }
       ]);
     });
+
+    it('should include version assets if static client', () => {
+      spyOn(glob, 'sync').and.returnValue([
+        path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg')
+      ]);
+      const lib = require('../lib/assets');
+      expect(lib.getEmittedAssets(true, '1.2.3-rc.0')).toEqual([
+        {
+          name: path.join('1.2.3-rc.0', 'assets', 'nested', 'my-file.jpg'),
+          file: path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg')
+        }
+      ]);
+    });
+
+    it('should include version and major version assets if static client', () => {
+      spyOn(glob, 'sync').and.returnValue([
+        path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg')
+      ]);
+      const lib = require('../lib/assets');
+      expect(lib.getEmittedAssets(true, '1.2.3')).toEqual([
+        {
+          name: path.join('1.2.3', 'assets', 'nested', 'my-file.jpg'),
+          file: path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg')
+        },
+        {
+          name: path.join('1', 'assets', 'nested', 'my-file.jpg'),
+          file: path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg')
+        }
+      ]);
+    })
   });
 
 });
