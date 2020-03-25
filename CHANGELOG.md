@@ -1,6 +1,8 @@
 # 1.7.3 (2020-03-25)
 
 - Fixed the `deploy` command to correctly include versioned static assets. [#60](https://github.com/blackbaud/skyux-deploy/pull/60)
+- Updated `minimist` version. [#61](https://github.com/blackbaud/skyux-deploy/pull/61)
+- Updated `acorn` version. [#59](https://github.com/blackbaud/skyux-deploy/pull/59)
 
 # 1.7.2 (2019-09-19)
 
