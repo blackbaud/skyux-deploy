@@ -225,7 +225,20 @@ describe('skyux-deploy lib assets', () => {
           file: path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg')
         }
       ]);
-    })
+    });
+
+    it('should exclude directories', () => {
+      spyOn(glob, 'sync').and.returnValue([]);
+
+      const assets = path.join(process.cwd(), 'dist', 'assets');
+      const lib = require('../lib/assets');
+
+      lib.getEmittedAssets();
+      expect(glob.sync).toHaveBeenCalledWith(
+        path.join(assets, '**', '*.*'),
+        { nodir: true }
+      )
+    });
   });
 
 });
