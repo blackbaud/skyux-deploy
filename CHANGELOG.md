@@ -1,3 +1,7 @@
+# 1.7.4 (2020-08-05)
+
+- Fixed the `deploy` command to correctly exclude directories, even if they contain dots. [#70](https://github.com/blackbaud/skyux-deploy/pull/70)
+
 # 1.7.3 (2020-03-25)
 
 - Fixed the `deploy` command to correctly include versioned static assets. [#60](https://github.com/blackbaud/skyux-deploy/pull/60)
