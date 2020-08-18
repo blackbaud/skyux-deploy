@@ -1,3 +1,7 @@
+# 1.8.0 (2020-08-18)
+
+- Updated the `deploy` command to upload assets in series instead of parallel. [#71](https://github.com/blackbaud/skyux-deploy/pull/71)
+
 # 1.7.4 (2020-08-05)
 
 - Fixed the `deploy` command to correctly exclude directories, even if they contain dots. [#70](https://github.com/blackbaud/skyux-deploy/pull/70)
