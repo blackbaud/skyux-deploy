@@ -1,4 +1,4 @@
-# 1.8.0 (2020-08-18)
+# 1.8.0 (2020-08-19)
 
 - Updated the `deploy` command to upload assets in series instead of parallel. [#71](https://github.com/blackbaud/skyux-deploy/pull/71)
 
