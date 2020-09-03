@@ -142,7 +142,7 @@ describe('skyux-deploy lib azure', () => {
       expect(createBlockBlobFromTextArgs.assetName).toEqual(assets[0].name);
       expect(createBlockBlobFromTextArgs.assetContent).toEqual(assets[0].content);
       expect(createBlockBlobFromTextArgs.options.contentSettings.contentType).toEqual(
-        'application/x-javascript'
+        'application/javascript'
       );
 
     });
