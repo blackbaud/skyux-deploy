@@ -1,6 +1,6 @@
 {
   "name": "@blackbaud/skyux-deploy",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "Deployment package for skyux apps",
   "main": "index.js",
   "bin": {

@@ -1,3 +1,7 @@
+# 1.8.1 (2020-09-03)
+
+- Updated the `content-type` used for JavaScript files from `application/x-javascript` to `application/javascript`. [#72](https://github.com/blackbaud/skyux-deploy/pull/72)
+
 # 1.8.0 (2020-08-19)
 
 - Updated the `deploy` command to upload assets in series instead of parallel. [#71](https://github.com/blackbaud/skyux-deploy/pull/71)
