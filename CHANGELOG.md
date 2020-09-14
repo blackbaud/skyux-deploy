@@ -1,4 +1,4 @@
-# 1.8.1 (2020-09-03)
+# 1.8.1 (2020-09-14)
 
 - Updated the `content-type` used for JavaScript files from `application/x-javascript` to `application/javascript`. [#72](https://github.com/blackbaud/skyux-deploy/pull/72)
 
