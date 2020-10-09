@@ -1,4 +1,4 @@
-# 1.8.2 (2020-09-18)
+# 1.9.0 (2020-10-09)
 
 - Updated the `baseUrl` used in the `portal`. [#73](https://github.com/blackbaud/skyux-deploy/pull/73)
 
