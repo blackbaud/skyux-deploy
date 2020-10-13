@@ -2,6 +2,7 @@
 
 describe('skyux-deploy lib assets', () => {
 
+  const crypto = require('crypto');
   const fs = require('fs-extra');
   const path = require('path');
   const glob = require('glob');
@@ -11,6 +12,12 @@ describe('skyux-deploy lib assets', () => {
     spyOn(fs, 'statSync').and.returnValue({
       size: 0
     });
+
+    spyOn(crypto, 'createHash').and.callFake(() => ({
+      update: () => ({
+        digest: () => 'MOCK_HASH'
+      })
+    }));
   });
 
   it('should expose a getDistAssets method', () => {
@@ -57,10 +64,35 @@ describe('skyux-deploy lib assets', () => {
       const assets = lib.getDistAssets();
       const sri = lib.getHash('my-custom-content1', 'sha384', 'base64');
 
-      expect(assets[0].name).toContain('custom-name');
+      expect(assets[0].name).toEqual('custom-name.MOCK_HASH.js');
       expect(assets[0].sri).toEqual('sha384-' + sri);
       expect(assets[0].size).toEqual(0);
       expect(fs.statSync).toHaveBeenCalled();
+    });
+
+    it('should allow disabling the file name hash', () => {
+      const readFileSync = fs.readFileSync;
+      spyOn(fs, 'existsSync').and.returnValue(true);
+      spyOn(fs, 'readFileSync').and.callFake((file, options) => {
+        if (file.indexOf('custom-name.js') > -1) {
+          return 'my-custom-content1';
+        } else {
+          return readFileSync(file, options);
+        }
+      });
+
+      let stubs = {};
+      stubs[path.join(process.cwd(), 'dist', 'metadata.json')] = [
+        {
+          name: 'custom-name.js'
+        }
+      ];
+
+      const lib = proxyquire('../lib/assets', stubs);
+      const hashFileNames = false;
+      const assets = lib.getDistAssets(false, false, undefined, hashFileNames);
+
+      expect(assets[0].name).toEqual('custom-name.js');
     });
 
     it('should include content if argument supplied', () => {

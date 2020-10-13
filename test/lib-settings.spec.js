@@ -61,4 +61,14 @@ describe('skyux-deploy lib settings', () => {
     expect(settings.name).toEqual('custom-name2');
     expect(settings.version).toEqual('');
   });
+
+  it('should support disabling hashed file names', () => {
+    const lib = require('../lib/settings');
+    const settings = lib.getSettings({
+      name: 'foobar',
+      hashFileNames: false
+    });
+
+    expect(settings.hashFileNames).toEqual(false);
+  });
 });
