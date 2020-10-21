@@ -1,3 +1,7 @@
+# 1.10.0 (2020-10-21)
+
+- Updated the `deploy` command with an option to disable hashed asset file names. [#74](https://github.com/blackbaud/skyux-deploy/pull/74)
+
 # 1.9.0 (2020-10-09)
 
 - Updated the `baseUrl` used in the `portal`. [#73](https://github.com/blackbaud/skyux-deploy/pull/73)
@@ -72,7 +76,7 @@
 
 # 1.0.0-beta.4 (2017-05-01)
 
-- Uploading assets as block blobs instead of append blobs to Azure. 
+- Uploading assets as block blobs instead of append blobs to Azure.
 
 # 1.0.0-beta.3 (2017-04-28)
 
