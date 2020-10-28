@@ -84,7 +84,7 @@ describe('skyux-deploy lib deploy SPA', () => {
       .calls
       .mostRecent()
       .args[1]
-      .rootElementTagName;
+      .root_element_tag_name;
 
     expect(actualTagName).toEqual('app-root');
   });
