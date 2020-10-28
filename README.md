@@ -28,6 +28,6 @@ All of the following options are required and overridable via the CLI.  For exam
 | `azureStorageTableName` | "spa"   |
 | `isStaticClient`        | `false` |
 | `hashFileNames`         | `true`  |
-! `rootElementTagName`    | `null`  |
+| `rootElementTagName`    | `null`  |
 
 `null` values are typically supplied by the CI process.
