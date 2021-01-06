@@ -70,4 +70,23 @@ describe('skyux-deploy lib deploy SPA', () => {
     );
   });
 
+  it('should deploy SPA with root element tag name', async () => {
+    await lib({
+      azureStorageAccessKey: 'abc',
+      name: 'custom-name2',
+      version: 'custom-version2',
+      rootElementTagName: 'app-root',
+      skyuxConfig: { test1: true },
+      packageConfig: { test2: true }
+    });
+
+    const actualTagName = portalMock.deploySpa
+      .calls
+      .mostRecent()
+      .args[1]
+      .root_element_tag_name;
+
+    expect(actualTagName).toEqual('app-root');
+  });
+
 });

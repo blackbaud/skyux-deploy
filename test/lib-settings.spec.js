@@ -71,4 +71,14 @@ describe('skyux-deploy lib settings', () => {
 
     expect(settings.hashFileNames).toEqual(false);
   });
+
+  it('should support setting the root element tag name', () => {
+    const lib = require('../lib/settings');
+    const settings = lib.getSettings({
+      name: 'foobar',
+      rootElementTagName: 'app-root'
+    });
+
+    expect(settings.rootElementTagName).toEqual('app-root');
+  });
 });
