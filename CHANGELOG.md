@@ -1,3 +1,7 @@
+# 1.11.0 (2021-01-06)
+
+- Updated the `deploy` command with an option to change the name of the root element for the application to bootstrap (e.g., `--rootElementTagName app-root`). [#76](https://github.com/blackbaud/skyux-deploy/pull/76)
+
 # 1.10.0 (2020-10-21)
 
 - Updated the `deploy` command with an option to disable hashed asset file names. [#74](https://github.com/blackbaud/skyux-deploy/pull/74)
