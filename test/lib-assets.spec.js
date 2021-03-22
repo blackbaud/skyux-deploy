@@ -81,7 +81,7 @@ describe('skyux-deploy lib assets', () => {
         },
         {
           name: 'styles.css',
-          type: 'styleSheet'
+          type: 'stylesheet'
         }
       ];
 
@@ -89,7 +89,7 @@ describe('skyux-deploy lib assets', () => {
       const assets = lib.getDistAssets();
 
       expect(assets[0].type).toEqual('script');
-      expect(assets[1].type).toEqual('styleSheet');
+      expect(assets[1].type).toEqual('stylesheet');
     });
 
     it('should allow disabling the file name hash', () => {

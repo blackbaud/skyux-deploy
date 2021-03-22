@@ -70,7 +70,7 @@ describe('skyux-deploy lib deploy static', () => {
   it('should call registerEntityToTable with style sheets if they exist', async () => {
     distAsset.push({
       name: 'styles.css',
-      type: 'styleSheet'
+      type: 'stylesheet'
     });
 
     const settings = {
@@ -84,8 +84,8 @@ describe('skyux-deploy lib deploy static', () => {
 
     await lib(settings);
 
-    expect(azureMock.registerEntityToTable.calls.mostRecent().args[1].StyleSheets).toEqual(
-      '[{"name":"styles.css","type":"styleSheet"}]'
+    expect(azureMock.registerEntityToTable.calls.mostRecent().args[1].Stylesheets).toEqual(
+      '[{"name":"styles.css","type":"stylesheet"}]'
     );
   });
 

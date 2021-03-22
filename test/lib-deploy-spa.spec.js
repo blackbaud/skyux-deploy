@@ -97,7 +97,7 @@ describe('skyux-deploy lib deploy SPA', () => {
   it('should call deploySpa with style sheets', async () => {
     mockAssets.push({
       name: 'styles.css',
-      type: 'styleSheet'
+      type: 'stylesheet'
     });
 
     await lib(
@@ -110,10 +110,10 @@ describe('skyux-deploy lib deploy SPA', () => {
       }
     );
 
-    expect(portalMock.deploySpa.calls.mostRecent().args[1].styleSheets).toEqual([
+    expect(portalMock.deploySpa.calls.mostRecent().args[1].stylesheets).toEqual([
       {
         name: 'styles.css',
-        type: 'styleSheet'
+        type: 'stylesheet'
       }
     ]);
   });
