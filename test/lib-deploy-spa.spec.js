@@ -16,12 +16,15 @@ describe('skyux-deploy lib deploy SPA', () => {
     assetsMock = {
       getDistAssets: jasmine.createSpy('getDistAssets')
         .and
-        .returnValue([
-          {
-            name: 'my-asset.js',
-            content: 'my-content'
-          }
-        ]),
+        .returnValue({
+          scripts: [
+            {
+              name: 'my-asset.js',
+              content: 'my-content'
+            }
+          ],
+          styleSheets: []
+        }),
     };
 
     portalMock = {

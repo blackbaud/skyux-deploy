@@ -64,9 +64,9 @@ describe('skyux-deploy lib assets', () => {
       const assets = lib.getDistAssets();
       const sri = lib.getHash('my-custom-content1', 'sha384', 'base64');
 
-      expect(assets[0].name).toEqual('custom-name.MOCK_HASH.js');
-      expect(assets[0].sri).toEqual('sha384-' + sri);
-      expect(assets[0].size).toEqual(0);
+      expect(assets.scripts[0].name).toEqual('custom-name.MOCK_HASH.js');
+      expect(assets.scripts[0].sri).toEqual('sha384-' + sri);
+      expect(assets.scripts[0].size).toEqual(0);
       expect(fs.statSync).toHaveBeenCalled();
     });
 
@@ -92,7 +92,7 @@ describe('skyux-deploy lib assets', () => {
       const hashFileNames = false;
       const assets = lib.getDistAssets(false, false, undefined, hashFileNames);
 
-      expect(assets[0].name).toEqual('custom-name.js');
+      expect(assets.scripts[0].name).toEqual('custom-name.js');
     });
 
     it('should include content if argument supplied', () => {
@@ -116,7 +116,7 @@ describe('skyux-deploy lib assets', () => {
       const lib = proxyquire('../lib/assets', stubs);
       const assets = lib.getDistAssets(true);
 
-      expect(assets[0].content).toEqual('my-custom-content2');
+      expect(assets.scripts[0].content).toEqual('my-custom-content2');
     });
 
     it('should not include content if argument supplied', () => {
@@ -142,8 +142,8 @@ describe('skyux-deploy lib assets', () => {
       const assetsWithContent = lib.getDistAssets(true);
       const assetsWithoutContent = lib.getDistAssets(false);
 
-      expect(assetsWithContent[0].content).toEqual('my-custom-content3');
-      expect(assetsWithoutContent[0].content).not.toBeDefined();
+      expect(assetsWithContent.scripts[0].content).toEqual('my-custom-content3');
+      expect(assetsWithoutContent.scripts[0].content).not.toBeDefined();
     });
 
     it('should evaluate static client assets', () => {
@@ -171,7 +171,7 @@ describe('skyux-deploy lib assets', () => {
 
       const assetsWithContent = lib.getDistAssets(true, true);
 
-      expect(assetsWithContent[0].content).toEqual('my-custom-content3');
+      expect(assetsWithContent.scripts[0].content).toEqual('my-custom-content3');
     });
 
     it('should handle major version assets', () => {
@@ -197,8 +197,8 @@ describe('skyux-deploy lib assets', () => {
 
       const lib = proxyquire('../lib/assets', stubs);
       const assetsWithContent = lib.getDistAssets(true, true, '1.0.0');
-      expect(assetsWithContent[0].version).toEqual('1.0.0');
-      expect(assetsWithContent[1].version).toEqual('1');
+      expect(assetsWithContent.scripts[0].version).toEqual('1.0.0');
+      expect(assetsWithContent.scripts[1].version).toEqual('1');
     });
   });
 

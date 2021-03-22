@@ -21,7 +21,10 @@ describe('skyux-deploy lib deploy static', () => {
     spyOn(logger, 'info');
 
     assetsMock = {
-      getDistAssets: jasmine.createSpy('getDistAssets').and.returnValue(distAsset)
+      getDistAssets: jasmine.createSpy('getDistAssets').and.returnValue({
+        scripts: distAsset,
+        styleSheets: []
+      })
     };
 
     azureMock = {
