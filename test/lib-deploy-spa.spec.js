@@ -8,23 +8,24 @@ describe('skyux-deploy lib deploy SPA', () => {
   let assetsMock;
   let portalMock;
   let lib;
+  let mockAssets;
 
   beforeEach(() => {
     spyOn(logger, 'error');
     spyOn(logger, 'info');
 
+    mockAssets = [
+      {
+        name: 'my-asset.js',
+        content: 'my-content',
+        type: 'script'
+      }
+    ];
+
     assetsMock = {
       getDistAssets: jasmine.createSpy('getDistAssets')
         .and
-        .returnValue({
-          scripts: [
-            {
-              name: 'my-asset.js',
-              content: 'my-content'
-            }
-          ],
-          styleSheets: []
-        }),
+        .returnValue(mockAssets),
     };
 
     portalMock = {
@@ -65,7 +66,8 @@ describe('skyux-deploy lib deploy SPA', () => {
         scripts: [
           {
             name: 'my-asset.js',
-            content: 'my-content'
+            content: 'my-content',
+            type: 'script'
           }
         ]
       },
@@ -90,6 +92,30 @@ describe('skyux-deploy lib deploy SPA', () => {
       .root_element_tag_name;
 
     expect(actualTagName).toEqual('app-root');
+  });
+
+  it('should call deploySpa with style sheets', async () => {
+    mockAssets.push({
+      name: 'styles.css',
+      type: 'styleSheet'
+    });
+
+    await lib(
+      {
+        azureStorageAccessKey: 'abc',
+        name: 'custom-name2',
+        version: 'custom-version2',
+        skyuxConfig: { test1: true },
+        packageConfig: { test2: true }
+      }
+    );
+
+    expect(portalMock.deploySpa.calls.mostRecent().args[1].styleSheets).toEqual([
+      {
+        name: 'styles.css',
+        type: 'styleSheet'
+      }
+    ]);
   });
 
 });
