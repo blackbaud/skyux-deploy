@@ -5,13 +5,7 @@ describe('skyux-deploy lib deploy static', () => {
   const mock = require('mock-require');
   const logger = require('@blackbaud/skyux-logger');
 
-  const distAsset = [
-    {
-      name: 'my-asset.js',
-      content: 'my-content'
-    }
-  ];
-
+  let distAsset;
   let assetsMock;
   let azureMock;
   let lib;
@@ -19,6 +13,14 @@ describe('skyux-deploy lib deploy static', () => {
   beforeEach(() => {
     spyOn(logger, 'error');
     spyOn(logger, 'info');
+
+    distAsset = [
+      {
+        name: 'my-asset.js',
+        content: 'my-content',
+        type: 'script'
+      }
+    ];
 
     assetsMock = {
       getDistAssets: jasmine.createSpy('getDistAssets').and.returnValue(distAsset)
@@ -62,6 +64,28 @@ describe('skyux-deploy lib deploy static', () => {
         PackageConfig: JSON.stringify(settings.packageConfig),
         Scripts: JSON.stringify(distAsset)
       }
+    );
+  });
+
+  it('should call registerEntityToTable with style sheets if they exist', async () => {
+    distAsset.push({
+      name: 'styles.css',
+      type: 'stylesheet'
+    });
+
+    const settings = {
+      azureStorageAccessKey: 'abc',
+      isStaticClient: true,
+      name: 'custom-name2',
+      version: 'custom-version2',
+      skyuxConfig: { test1: true },
+      packageConfig: { test2: true }
+    };
+
+    await lib(settings);
+
+    expect(azureMock.registerEntityToTable.calls.mostRecent().args[1].Stylesheets).toEqual(
+      '[{"name":"styles.css","type":"stylesheet"}]'
     );
   });
 

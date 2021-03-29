@@ -70,6 +70,28 @@ describe('skyux-deploy lib assets', () => {
       expect(fs.statSync).toHaveBeenCalled();
     });
 
+    it('should set the asset type to "script" by default', () => {
+      spyOn(fs, 'existsSync').and.returnValue(true);
+      spyOn(fs, 'readFileSync').and.returnValue('');
+
+      let stubs = {};
+      stubs[path.join(process.cwd(), 'dist', 'metadata.json')] = [
+        {
+          name: 'custom-name.js'
+        },
+        {
+          name: 'styles.css',
+          type: 'stylesheet'
+        }
+      ];
+
+      const lib = proxyquire('../lib/assets', stubs);
+      const assets = lib.getDistAssets();
+
+      expect(assets[0].type).toEqual('script');
+      expect(assets[1].type).toEqual('stylesheet');
+    });
+
     it('should allow disabling the file name hash', () => {
       const readFileSync = fs.readFileSync;
       spyOn(fs, 'existsSync').and.returnValue(true);
