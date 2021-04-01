@@ -1,3 +1,7 @@
+# 1.12.1 (2021-04-01)
+
+- Updated the `deploy` command to set the correct content type for stylesheet assets. [#78](https://github.com/blackbaud/skyux-deploy/pull/78)
+
 # 1.12.0 (2021-03-30)
 
 - Updated the `deploy` command to support stylesheet assets. [#77](https://github.com/blackbaud/skyux-deploy/pull/77)
