@@ -147,6 +147,23 @@ describe('skyux-deploy lib azure', () => {
 
     });
 
+    it('should publish CSS files with the appropriate content type', () => {
+      spyOn(logger, 'info');
+
+      const settings = { blobName: 'blob-name2' };
+      const assets = [{
+        name: 'asset-name1.css',
+        content: 'body { color: green; }'
+      }];
+
+      lib.registerAssetsToBlob(settings, assets);
+      createContainerIfNotExistsArgs.cb();
+
+      expect(createBlockBlobFromTextArgs.options.contentSettings.contentType).toEqual(
+        'text/css'
+      );
+    });
+
     it('should call createBlockBlobFromText and handle error', (done) => {
 
       const error = 'error2';
