@@ -1,3 +1,7 @@
+# 2.0.0-beta.1 (2022-05-12)
+
+- Fixed blob Content-Type headers. [#83](https://github.com/blackbaud/skyux-deploy/pull/83)
+
 # 2.0.0-beta.0 (2022-05-12)
 
 - Migrate to supported Azure NPM libraries. [#81](https://github.com/blackbaud/skyux-deploy/pull/81)
