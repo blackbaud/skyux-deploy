@@ -9,83 +9,58 @@ describe('skyux-deploy lib azure', () => {
   const logger = require('@blackbaud/skyux-logger');
 
   let lib;
-  let createTableServiceArgs;
-  let createBlockBlobFromTextArgs;
-  let createBlockBlobFromLocalFileArgs;
-  let createContainerIfNotExistsArgs;
-  let createTableIfNotExistsArgs;
-  let insertOrReplaceEntityArgs;
+
+  let mockContainerClient;
+  let mockTableClient;
+  let mockBlockBlobClient;
+  let mockTable;
+  let mockSharedKeyCredential;
+  let mockReplaceValue;
 
   beforeEach(() => {
+    mockBlockBlobClient = {
+      upload: jasmine.createSpy('upload').and.resolveTo(),
+      uploadFile: jasmine.createSpy('uploadFile').and.resolveTo()
+    };
 
-    createTableServiceArgs = {};
-    createBlockBlobFromTextArgs = {};
-    createBlockBlobFromLocalFileArgs = {};
-    createContainerIfNotExistsArgs = {};
-    createTableIfNotExistsArgs = {};
-    insertOrReplaceEntityArgs = {};
+    mockTable = {
+      upsertEntity: jasmine.createSpy('upsertEntity').and.resolveTo()
+    };
 
-    mock('azure-storage', {
-      createBlobService: () => {
+    mockContainerClient = {
+      createIfNotExists: jasmine.createSpy('createIfNotExists').and.resolveTo(),
+      getBlockBlobClient: jasmine.createSpy('getBlockBlobClient').and.returnValue(mockBlockBlobClient)
+    };
 
-        return {
-          createContainerIfNotExists: (blobName, acl, cb) => {
-            createContainerIfNotExistsArgs = {
-              blobName: blobName,
-              acl: acl,
-              cb: cb
-            };
-          },
+    mockTableClient = {
+      createTable: jasmine.createSpy('createTable').and.resolveTo(mockTable)
+    };
 
-          createBlockBlobFromText: (blobName, assetName, assetContent, options, cb) => {
-            createBlockBlobFromTextArgs = {
-              blobName: blobName,
-              assetName: assetName,
-              assetContent: assetContent,
-              options: options,
-              cb: cb
-            };
-          },
+    mockSharedKeyCredential = {};
+    mockReplaceValue = 'REPLACE';
 
-          createBlockBlobFromLocalFile: (blobName, assetName, localFile, cb) => {
-            createBlockBlobFromLocalFileArgs = {
-              blobName: blobName,
-              assetName: assetName,
-              localFile: localFile,
-              cb: cb
-            };
-          }
-        };
+    mock('@azure/storage-blob', {
+      ContainerClient: function (...args) {
+        mockContainerClient.__ctorArgs = args;
+        return mockContainerClient;
       },
+      StorageSharedKeyCredential: function (...args) {
+        mockSharedKeyCredential.__ctorArgs = args;
+        return mockSharedKeyCredential;
+      }
+    });
 
-      createTableService: (account, key) => {
-        createTableServiceArgs = {
-          account: account,
-          key: key
-        };
-
-        return {
-          createTableIfNotExists: (tableName, cb) => {
-            createTableIfNotExistsArgs = {
-              tableName: tableName,
-              cb: cb
-            };
-          },
-
-          insertOrReplaceEntity: (tableName, entity, cb) => {
-            insertOrReplaceEntityArgs = {
-              tableName: tableName,
-              entity: entity,
-              cb: cb
-            };
-          }
-        };
+    mock('@azure/data-tables', {
+      TableClient: function (...args) {
+        mockTableClient.__ctorArgs = args;
+        return mockTableClient;
       },
-
-      TableUtilities: {
-        entityGenerator: {
-          String: () => {}
-        }
+      StorageSharedKeyCredential: function (...args) {
+        mockSharedKeyCredential.__ctorArgs = args;
+        return mockSharedKeyCredential;
+      },
+      UpdateMode: {
+        Replace: mockReplaceValue
       }
     });
 
@@ -94,10 +69,6 @@ describe('skyux-deploy lib azure', () => {
 
   afterEach(() => {
     mock.stop('azure-storage');
-  });
-
-  it('should expose the azure TableUtilities generator', () => {
-    expect(lib.generator).toBeDefined();
   });
 
   it('should expose a registerAssetsToBlob method', () => {
@@ -109,192 +80,205 @@ describe('skyux-deploy lib azure', () => {
   });
 
   describe('registerAssetsToBlob', () => {
-
-    it('should call createContainerIfNotExist and handle error', (done) => {
+    it('should create a ContainerClient with the expected args', async () => {
       spyOn(logger, 'error');
 
-      const error = 'error1';
-      const settings = { blobName: 'blob-name1' };
+      const settings = {
+        azureStorageAccount: 'account-name',
+        azureStorageAccessKey: 'foo',
+        name: 'blob-name1'
+      };
 
-      lib.registerAssetsToBlob(settings, [])
-        .catch(err => {
-          expect(err).toBe(error);
-          expect(logger.error).toHaveBeenCalledWith(error);
-          done();
-        });
+      await lib.registerAssetsToBlob(settings, []);
 
-      createContainerIfNotExistsArgs.cb(error);
+      expect(mockContainerClient.__ctorArgs).toEqual([
+        'https://account-name.blob.core.windows.net/blob-name1',
+        {
+          __ctorArgs: [
+            'account-name',
+            'foo'
+          ]
+        }
+      ])
     });
 
-    it('should call createContainerIfNotExist and handle success', () => {
+    it('should call ContainerClient.createIfNotExists() and handle error', async () => {
+      spyOn(logger, 'error');
+
+      const testError = new Error('error1');
+      const settings = { name: 'blob-name1' };
+
+      mockContainerClient.createIfNotExists.and.rejectWith(testError);
+
+      await expectAsync(lib.registerAssetsToBlob(settings, [])).toBeRejectedWith(testError);
+      expect(logger.error).toHaveBeenCalledWith(testError);
+    });
+
+    it('should call ContainerClient.createIfNotExists() and handle success', async () => {
       spyOn(logger, 'info');
 
-      const settings = { blobName: 'blob-name2' };
+      const settings = { name: 'blob-name2' };
       const assets = [{
         name: 'asset-name1',
         content: 'asset-content1'
       }];
-      lib.registerAssetsToBlob(settings, assets);
-      createContainerIfNotExistsArgs.cb();
+
+      await lib.registerAssetsToBlob(settings, assets);
 
       expect(logger.info).toHaveBeenCalled();
-      expect(createBlockBlobFromTextArgs.blobName).toEqual(settings.name);
-      expect(createBlockBlobFromTextArgs.assetName).toEqual(assets[0].name);
-      expect(createBlockBlobFromTextArgs.assetContent).toEqual(assets[0].content);
-      expect(createBlockBlobFromTextArgs.options.contentSettings.contentType).toEqual(
-        'application/javascript'
+
+      expect(mockContainerClient.getBlockBlobClient).toHaveBeenCalledWith(
+        assets[0].name
       );
 
+      expect(mockBlockBlobClient.upload).toHaveBeenCalledWith(
+        assets[0].content,
+        assets[0].content.length,
+        {
+          contentType: 'application/javascript'
+        }
+      );
     });
 
-    it('should publish CSS files with the appropriate content type', () => {
+    it('should publish CSS files with the appropriate content type', async () => {
       spyOn(logger, 'info');
 
-      const settings = { blobName: 'blob-name2' };
+      const settings = { name: 'blob-name2' };
       const assets = [{
         name: 'asset-name1.css',
         content: 'body { color: green; }'
       }];
 
-      lib.registerAssetsToBlob(settings, assets);
-      createContainerIfNotExistsArgs.cb();
+      await lib.registerAssetsToBlob(settings, assets);
 
-      expect(createBlockBlobFromTextArgs.options.contentSettings.contentType).toEqual(
-        'text/css'
+      expect(mockBlockBlobClient.upload).toHaveBeenCalledWith(
+        assets[0].content,
+        assets[0].content.length,
+        {
+          contentType: 'text/css'
+        }
       );
     });
 
-    it('should call createBlockBlobFromText and handle error', (done) => {
+    it('should call BlockBlobClient.upload() and handle error', async () => {
+      const testError = new Error('error2');
 
-      const error = 'error2';
-      const settings = { blobName: 'blob-name2' };
+      mockContainerClient.createIfNotExists.and.rejectWith(testError);
+
+      const settings = { name: 'blob-name2' };
       const assets = [{
         name: 'asset-name1',
         content: 'asset-content1'
       }];
 
       spyOn(logger, 'error');
-      lib.registerAssetsToBlob(settings, assets)
-        .catch(err => {
-          expect(err).toBe(error);
-          expect(logger.error).toHaveBeenCalledWith(error);
-          done();
-        });
-
-      createContainerIfNotExistsArgs.cb();
-      createBlockBlobFromTextArgs.cb(error);
+      await expectAsync(lib.registerAssetsToBlob(settings, assets)).toBeRejectedWith(testError);
+      expect(logger.error).toHaveBeenCalledWith(testError);
     });
 
-    it('should call createBlockBlobFromLocalFile and handle success', () => {
-      const settings = { blobName: 'blob-name3' };
+    it('should call BlockBlobClient.uploadFile() and handle success', async () => {
+      const settings = { name: 'blob-name3' };
       const assets = [{
         name: 'asset-name2.jpg',
         file: '/home/assets/asset-name2.jpg'
       }];
 
-      spyOn(logger, 'error');
-      lib.registerAssetsToBlob(settings, assets);
-      createContainerIfNotExistsArgs.cb();
+      await lib.registerAssetsToBlob(settings, assets);
 
-      expect(createBlockBlobFromLocalFileArgs.blobName).toEqual(settings.name);
-      expect(createBlockBlobFromLocalFileArgs.assetName).toEqual(assets[0].name);
-      expect(createBlockBlobFromLocalFileArgs.localFile).toEqual(assets[0].file);
+      expect(mockContainerClient.getBlockBlobClient).toHaveBeenCalledWith(
+        assets[0].name
+      );
+
+      expect(mockBlockBlobClient.uploadFile).toHaveBeenCalledWith(assets[0].file);
     });
 
-    it('should call createBlockBlobFromLocalFile and handle error', (done) => {
-
-      const error = 'error4';
-      const settings = { blobName: 'blob-name4' };
+    it('should call BlockBlobClient.uploadFile() and handle error', async () => {
+      const testError = new Error('error4');
+      const settings = { name: 'blob-name4' };
       const assets = [{
         name: 'asset-name3.jpg',
         file: '/home/assets/asset-name3.jpg'
       }];
 
-      spyOn(logger, 'error');
-      lib.registerAssetsToBlob(settings, assets)
-        .catch(err => {
-          expect(err).toBe(error);
-          expect(logger.error).toHaveBeenCalledWith(error);
-          done();
-        });
-      createContainerIfNotExistsArgs.cb();
-      createBlockBlobFromLocalFileArgs.cb(error);
+      mockBlockBlobClient.uploadFile.and.rejectWith(testError);
 
+      spyOn(logger, 'error');
+      await expectAsync(lib.registerAssetsToBlob(settings, assets)).toBeRejectedWith(testError);
+      expect(logger.error).toHaveBeenCalledWith(testError);
     });
 
-    it('should throw an error if no assets', (done) => {
+    it('should throw an error if no assets', async () => {
       spyOn(logger, 'error');
-      lib.registerAssetsToBlob({}).catch((err) => {
-        expect(err).toEqual('Assets are required.');
-        done();
-      });
+      await expectAsync(lib.registerAssetsToBlob({})).toBeRejectedWithError('Assets are required.');
     });
 
-    it('should log an error if there was unknown asset type', (done) => {
+    it('should log an error if there was unknown asset type', async () => {
       spyOn(logger, 'error');
       const error = 'Unknown asset type.';
-      lib.registerAssetsToBlob({}, [{ type: 'unknown' }])
-        .catch(err => {
-          expect(err).toBe(error);
-          expect(logger.error).toHaveBeenCalledWith(error);
-          done();
-        });
-      createContainerIfNotExistsArgs.cb();
+
+      await expectAsync(lib.registerAssetsToBlob({}, [{ type: 'unknown' }])).toBeRejectedWithError(error);
+      expect(logger.error).toHaveBeenCalledWith(new Error(error));
     });
   });
 
   describe('registerEntityToTable', () => {
-
-    it('should create a table service using the supplied credentials', () => {
+    it('should create a table service using the supplied credentials', async () => {
       const settings = {
         azureStorageAccount: 'account2',
-        azureStorageAccessKey: 'key2'
+        azureStorageAccessKey: 'key2',
+        azureStorageTableName: 'table1'
       };
-      lib.registerEntityToTable(settings);
-      expect(createTableServiceArgs.account).toEqual(settings.azureStorageAccount);
-      expect(createTableServiceArgs.key).toEqual(settings.azureStorageAccessKey);
+
+      await lib.registerEntityToTable(settings);
+
+      expect(mockTableClient.__ctorArgs).toEqual([
+          'https://account2.table.core.windows.net',
+          'table1',
+          {
+            __ctorArgs: [
+              settings.azureStorageAccount,
+              settings.azureStorageAccessKey
+            ]
+          }
+      ]);
     });
 
-    it('should call createTableIfNotExists and handle error', (done) => {
+    it('should call TableClient.createTable() and handle error', async () => {
       spyOn(logger, 'error');
 
-      const error = 'error5';
-      lib.registerEntityToTable({}, {})
-      .catch(err => {
-        expect(err).toBe(error);
-        expect(logger.error).toHaveBeenCalledWith(error);
-        done();
-      });
-      createTableIfNotExistsArgs.cb(error);
+      const testError = new Error('error5');
+
+      mockTableClient.createTable.and.rejectWith(testError);
+
+      await expectAsync(lib.registerEntityToTable({}, {})).toBeRejectedWith(testError);
+      expect(logger.error).toHaveBeenCalledWith(testError);
     });
 
-    it('should call insertOrReplaceEntity and handle success', () => {
+    it('should call Table.upsertEntity() and handle success', async () => {
       const settings = { name: 'custom-name3' };
+      const entity = {
+        foo: 'bar'
+      };
 
       spyOn(logger, 'info');
-      lib.registerEntityToTable(settings, {});
-      createTableIfNotExistsArgs.cb();
-      insertOrReplaceEntityArgs.cb();
+      await lib.registerEntityToTable(settings, entity);
+
+      expect(mockTable.upsertEntity).toHaveBeenCalledWith(entity, mockReplaceValue);
 
       expect(logger.info).toHaveBeenCalledWith(
         'SPA %s registered in table storage.',
         settings.name
       );
-
     });
 
-    it('should call insertOrReplaceEntity and handle error', (done) => {
+    it('should call Table.upsertEntity() and handle error', async () => {
       spyOn(logger, 'error');
-      const error = 'error6';
-      lib.registerEntityToTable({}, {})
-        .catch(err => {
-          expect(err).toBe(error);
-          expect(logger.error).toHaveBeenCalledWith(error);
-          done();
-        });
-      createTableIfNotExistsArgs.cb();
-      insertOrReplaceEntityArgs.cb(error);
-    });
+      const testError = new Error('error6');
 
+      mockTable.upsertEntity.and.rejectWith(testError);
+
+      await expectAsync(lib.registerEntityToTable({}, {})).toBeRejectedWith(testError);
+      expect(logger.error).toHaveBeenCalledWith(testError);
+    });
   });
 });

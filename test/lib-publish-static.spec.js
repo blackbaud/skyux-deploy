@@ -9,9 +9,6 @@ describe('skyux-deploy lib publish static', () => {
 
   beforeEach(() => {
     azureMock = {
-      generator: {
-        String: s => s
-      },
       registerEntityToTable: jasmine.createSpy('registerEntityToTable')
     };
 
@@ -39,8 +36,8 @@ describe('skyux-deploy lib publish static', () => {
         test: true
       },
       {
-        PartitionKey: 'custom-name',
-        RowKey: '__default',
+        partitionKey: 'custom-name',
+        rowKey: '__default',
         Version: 'custom-version'
       }
     );
