@@ -82,10 +82,10 @@ describe('skyux-deploy lib portal', () => {
       );
     });
 
-    it('should handle a non-200 response', () => {
+    it('should handle a non-200 response', async () => {
       var expectedError = mockError();
 
-      expectAsync(portal.deploySpa(
+      await expectAsync(portal.deploySpa(
         'abc',
         {
           name: 'spa-name'
@@ -118,10 +118,10 @@ describe('skyux-deploy lib portal', () => {
       );
     });
 
-    it('should handle a non-200 response', () => {
+    it('should handle a non-200 response', async () => {
       var expectedError = mockError();
 
-      expectAsync(portal.publishSpa(
+      await expectAsync(portal.publishSpa(
         'abc',
         {
           name: 'spa-name',

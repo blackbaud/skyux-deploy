@@ -27,9 +27,6 @@ describe('skyux-deploy lib deploy static', () => {
     };
 
     azureMock = {
-      generator: {
-        String: s => s
-      },
       registerEntityToTable: jasmine.createSpy('registerEntityToTable').and.returnValue(Promise.resolve())
     };
 
@@ -58,8 +55,8 @@ describe('skyux-deploy lib deploy static', () => {
     expect(azureMock.registerEntityToTable).toHaveBeenCalledWith(
       settings,
       {
-        PartitionKey: 'custom-name2',
-        RowKey: 'custom-version2',
+        partitionKey: 'custom-name2',
+        rowKey: 'custom-version2',
         SkyUXConfig: JSON.stringify(settings.skyuxConfig),
         PackageConfig: JSON.stringify(settings.packageConfig),
         Scripts: JSON.stringify(distAsset)
@@ -130,8 +127,8 @@ describe('skyux-deploy lib deploy static', () => {
     expect(azureMock.registerEntityToTable).toHaveBeenCalledWith(
       settings,
       {
-        PartitionKey: 'custom-name3',
-        RowKey: '3',
+        partitionKey: 'custom-name3',
+        rowKey: '3',
         SkyUXConfig: JSON.stringify(settings.skyuxConfig),
         PackageConfig: JSON.stringify(settings.packageConfig),
         Scripts: JSON.stringify(distAsset)
@@ -141,8 +138,8 @@ describe('skyux-deploy lib deploy static', () => {
     expect(azureMock.registerEntityToTable).toHaveBeenCalledWith(
       settings,
       {
-        PartitionKey: 'custom-name3',
-        RowKey: '3-latest',
+        partitionKey: 'custom-name3',
+        rowKey: '3-latest',
         SkyUXConfig: JSON.stringify(settings.skyuxConfig),
         PackageConfig: JSON.stringify(settings.packageConfig),
         Scripts: JSON.stringify(distAsset)
