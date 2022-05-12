@@ -1,3 +1,7 @@
+# 2.0.0 (2022-05-12)
+
+- 2.0.0 major release. [#85](https://github.com/blackbaud/skyux-deploy/pull/85)
+
 # 2.0.0-beta.2 (2022-05-12)
 
 - Set Content-Type on uploaded files from disk. [#84](https://github.com/blackbaud/skyux-deploy/pull/84)
