@@ -19,8 +19,8 @@ describe('skyux-deploy lib azure', () => {
 
   beforeEach(() => {
     mockBlockBlobClient = {
-      upload: jasmine.createSpy('upload').and.resolveTo(),
-      uploadFile: jasmine.createSpy('uploadFile').and.resolveTo()
+      upload: jasmine.createSpy('upload').and.resolveTo({}),
+      uploadFile: jasmine.createSpy('uploadFile').and.resolveTo({})
     };
 
     mockTable = {
@@ -193,7 +193,37 @@ describe('skyux-deploy lib azure', () => {
         assets[0].name
       );
 
-      expect(mockBlockBlobClient.uploadFile).toHaveBeenCalledWith(assets[0].file);
+      expect(mockBlockBlobClient.uploadFile).toHaveBeenCalledWith(
+        assets[0].file,
+        {
+          blobHTTPHeaders: {
+            blobContentType: 'image/jpeg'
+          }
+        }
+      );
+    });
+
+    it('should handle unknown MIME types', async () => {
+      const settings = { name: 'blob-name3' };
+      const assets = [{
+        name: 'asset-name2.#%*@)',
+        file: '/home/assets/asset-name2.#%*@)'
+      }];
+
+      await lib.registerAssetsToBlob(settings, assets);
+
+      expect(mockContainerClient.getBlockBlobClient).toHaveBeenCalledWith(
+        assets[0].name
+      );
+
+      expect(mockBlockBlobClient.uploadFile).toHaveBeenCalledWith(
+        assets[0].file,
+        {
+          blobHTTPHeaders: {
+            blobContentType: 'application/octet-stream'
+          }
+        }
+      );
     });
 
     it('should call BlockBlobClient.uploadFile() and handle error', async () => {

@@ -1,3 +1,7 @@
+# 2.0.0-beta.2 (2022-05-12)
+
+- Set Content-Type on uploaded files from disk. [#84](https://github.com/blackbaud/skyux-deploy/pull/84)
+
 # 2.0.0-beta.1 (2022-05-12)
 
 - Fixed blob Content-Type headers. [#83](https://github.com/blackbaud/skyux-deploy/pull/83)
