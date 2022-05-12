@@ -135,7 +135,9 @@ describe('skyux-deploy lib azure', () => {
         assets[0].content,
         assets[0].content.length,
         {
-          contentType: 'application/javascript'
+          blobHTTPHeaders: {
+            blobContentType: 'application/javascript'
+          }
         }
       );
     });
@@ -155,7 +157,9 @@ describe('skyux-deploy lib azure', () => {
         assets[0].content,
         assets[0].content.length,
         {
-          contentType: 'text/css'
+          blobHTTPHeaders: {
+            blobContentType: 'text/css'
+          }
         }
       );
     });
