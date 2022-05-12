@@ -1,3 +1,7 @@
+# 2.0.0-beta.0 (2022-05-12)
+
+- Migrate to supported Azure NPM libraries. [#81](https://github.com/blackbaud/skyux-deploy/pull/81)
+
 # 1.12.2 (2021-10-27)
 
 - Updated the `deploy` command to create private blobs. [#80](https://github.com/blackbaud/skyux-deploy/pull/80)
