@@ -10,11 +10,11 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 5
-    - name: Install and run tests
-      run: |
-        npm ci
-        npm test
-        bash <(curl -s https://codecov.io/bash)
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 5
+      - name: Install and run tests
+        run: |
+          npm ci
+          npm test
+          bash <(curl -s https://codecov.io/bash)

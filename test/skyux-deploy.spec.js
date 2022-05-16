@@ -4,14 +4,13 @@ const logger = require('@blackbaud/skyux-logger');
 const mock = require('mock-require');
 
 describe('skyux-deploy', () => {
-
   const cmds = {
     deploy: false,
-    publish: false
+    publish: false,
   };
 
   beforeAll(() => {
-    Object.keys(cmds).forEach(key => {
+    Object.keys(cmds).forEach((key) => {
       mock('../lib/' + key, () => {
         cmds[key] = true;
         return Promise.reject();
@@ -20,7 +19,7 @@ describe('skyux-deploy', () => {
   });
 
   afterAll(() => {
-    Object.keys(cmds).forEach(key => mock.stop('../lib/' + key));
+    Object.keys(cmds).forEach((key) => mock.stop('../lib/' + key));
   });
 
   it('should give details name, version, and SKY UX version', () => {
@@ -29,7 +28,7 @@ describe('skyux-deploy', () => {
     require('../index')({
       _: ['junk-command'],
       name: 'spa-name',
-      version: 'spa-version'
+      version: 'spa-version',
     });
     expect(logger.info).toHaveBeenCalledWith('SPA Name: %s', 'spa-name');
     expect(logger.info).toHaveBeenCalledWith('SPA Version: %s', 'spa-version');
@@ -48,9 +47,9 @@ describe('skyux-deploy', () => {
       }
     });
 
-    Object.keys(cmds).forEach(key => {
+    Object.keys(cmds).forEach((key) => {
       require('../index')({
-        _: [key]
+        _: [key],
       });
 
       expect(cmds[key]).toEqual(true);
@@ -58,8 +57,7 @@ describe('skyux-deploy', () => {
   });
 
   it('should return a non-zero exit code if a known command fails', (done) => {
-
-    spyOn(process, 'exit').and.callFake(exitCode => {
+    spyOn(process, 'exit').and.callFake((exitCode) => {
       expect(exitCode).toEqual(1);
       done();
     });
@@ -67,9 +65,7 @@ describe('skyux-deploy', () => {
     require('../index')({
       _: ['deploy'],
       name: 'spa-name',
-      version: 'spa-version'
+      version: 'spa-version',
     });
-
   });
-
 });

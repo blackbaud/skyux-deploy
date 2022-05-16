@@ -1,7 +1,6 @@
 'use strict';
 
 describe('skyux-deploy lib publish', () => {
-
   const mock = require('mock-require');
 
   const loggerInfoSuccess = 'Successfully published.';
@@ -16,7 +15,7 @@ describe('skyux-deploy lib publish', () => {
       azureStorageAccessKey: 'abc',
       isStaticClient: isStaticClient,
       name: 'custom-name',
-      version: 'custom-version'
+      version: 'custom-version',
     });
   }
 
@@ -38,14 +37,12 @@ describe('skyux-deploy lib publish', () => {
 
   it('should publish as a SPA when settings.isStaticClient = false', async () => {
     await callPublish(false);
-    expect(publishSpaMock).toHaveBeenCalledWith(
-      {
-        azureStorageAccessKey: 'abc',
-        isStaticClient: false,
-        name: 'custom-name',
-        version: 'custom-version'
-      }
-    );
+    expect(publishSpaMock).toHaveBeenCalledWith({
+      azureStorageAccessKey: 'abc',
+      isStaticClient: false,
+      name: 'custom-name',
+      version: 'custom-version',
+    });
 
     expect(publishStaticMock).not.toHaveBeenCalled();
     expect(loggerMock.info).toHaveBeenCalledWith(loggerInfoSuccess);
@@ -53,14 +50,12 @@ describe('skyux-deploy lib publish', () => {
 
   it('should publish as a static client when settings.isStaticClient = true', async () => {
     await callPublish(true);
-    expect(publishStaticMock).toHaveBeenCalledWith(
-      {
-        azureStorageAccessKey: 'abc',
-        isStaticClient: true,
-        name: 'custom-name',
-        version: 'custom-version'
-      }
-    );
+    expect(publishStaticMock).toHaveBeenCalledWith({
+      azureStorageAccessKey: 'abc',
+      isStaticClient: true,
+      name: 'custom-name',
+      version: 'custom-version',
+    });
 
     expect(publishSpaMock).not.toHaveBeenCalled();
     expect(loggerMock.info).toHaveBeenCalledWith(loggerInfoSuccess);
@@ -85,5 +80,4 @@ describe('skyux-deploy lib publish', () => {
     await expectAsync(callPublish(true)).toBeRejectedWith(error);
     expect(loggerMock.error).toHaveBeenCalledWith(error);
   });
-
 });

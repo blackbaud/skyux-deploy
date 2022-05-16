@@ -1,7 +1,6 @@
 'use strict';
 
 describe('skyux-deploy lib assets', () => {
-
   const crypto = require('crypto');
   const fs = require('fs-extra');
   const path = require('path');
@@ -10,13 +9,13 @@ describe('skyux-deploy lib assets', () => {
 
   beforeEach(() => {
     spyOn(fs, 'statSync').and.returnValue({
-      size: 0
+      size: 0,
     });
 
     spyOn(crypto, 'createHash').and.callFake(() => ({
       update: () => ({
-        digest: () => 'MOCK_HASH'
-      })
+        digest: () => 'MOCK_HASH',
+      }),
     }));
   });
 
@@ -36,7 +35,6 @@ describe('skyux-deploy lib assets', () => {
   });
 
   describe('getDistAssets', () => {
-
     it('should return an empty array if no metadata.json', () => {
       const lib = require('../lib/assets');
       expect(lib.getDistAssets()).toEqual([]);
@@ -56,8 +54,8 @@ describe('skyux-deploy lib assets', () => {
       let stubs = {};
       stubs[path.join(process.cwd(), 'dist', 'metadata.json')] = [
         {
-          name: 'custom-name.js'
-        }
+          name: 'custom-name.js',
+        },
       ];
 
       const lib = proxyquire('../lib/assets', stubs);
@@ -77,12 +75,12 @@ describe('skyux-deploy lib assets', () => {
       let stubs = {};
       stubs[path.join(process.cwd(), 'dist', 'metadata.json')] = [
         {
-          name: 'custom-name.js'
+          name: 'custom-name.js',
         },
         {
           name: 'styles.css',
-          type: 'stylesheet'
-        }
+          type: 'stylesheet',
+        },
       ];
 
       const lib = proxyquire('../lib/assets', stubs);
@@ -106,8 +104,8 @@ describe('skyux-deploy lib assets', () => {
       let stubs = {};
       stubs[path.join(process.cwd(), 'dist', 'metadata.json')] = [
         {
-          name: 'custom-name.js'
-        }
+          name: 'custom-name.js',
+        },
       ];
 
       const lib = proxyquire('../lib/assets', stubs);
@@ -131,8 +129,8 @@ describe('skyux-deploy lib assets', () => {
       let stubs = {};
       stubs[path.join(process.cwd(), 'dist', 'metadata.json')] = [
         {
-          name: 'custom-name.js'
-        }
+          name: 'custom-name.js',
+        },
       ];
 
       const lib = proxyquire('../lib/assets', stubs);
@@ -145,7 +143,6 @@ describe('skyux-deploy lib assets', () => {
       const readFileSync = fs.readFileSync;
       spyOn(fs, 'existsSync').and.returnValue(true);
       spyOn(fs, 'readFileSync').and.callFake((file, options) => {
-
         if (file.indexOf('custom-name.js') > -1) {
           return 'my-custom-content3';
         } else {
@@ -156,8 +153,8 @@ describe('skyux-deploy lib assets', () => {
       let stubs = {};
       stubs[path.join(process.cwd(), 'dist', 'metadata.json')] = [
         {
-          name: 'custom-name.js'
-        }
+          name: 'custom-name.js',
+        },
       ];
 
       const lib = proxyquire('../lib/assets', stubs);
@@ -172,7 +169,7 @@ describe('skyux-deploy lib assets', () => {
       const readFileSync = fs.readFileSync;
 
       spyOn(glob, 'sync').and.returnValue([
-        path.join(process.cwd(), 'dist', 'bundles', 'test.umd.js')
+        path.join(process.cwd(), 'dist', 'bundles', 'test.umd.js'),
       ]);
       spyOn(fs, 'readFileSync').and.callFake((file, options) => {
         if (file.indexOf('test.umd.js') > -1) {
@@ -185,8 +182,8 @@ describe('skyux-deploy lib assets', () => {
       let stubs = {};
       stubs[path.join(process.cwd(), 'dist', 'bundles', 'test.umd.js')] = [
         {
-          name: 'custom-name.js'
-        }
+          name: 'custom-name.js',
+        },
       ];
 
       const lib = proxyquire('../lib/assets', stubs);
@@ -200,7 +197,7 @@ describe('skyux-deploy lib assets', () => {
       const readFileSync = fs.readFileSync;
 
       spyOn(glob, 'sync').and.returnValue([
-        path.join(process.cwd(), 'dist', 'bundles', 'test.umd.js')
+        path.join(process.cwd(), 'dist', 'bundles', 'test.umd.js'),
       ]);
       spyOn(fs, 'readFileSync').and.callFake((file, options) => {
         if (file.indexOf('test.umd.js') > -1) {
@@ -213,8 +210,8 @@ describe('skyux-deploy lib assets', () => {
       let stubs = {};
       stubs[path.join(process.cwd(), 'dist', 'bundles', 'test.umd.js')] = [
         {
-          name: 'custom-name.js'
-        }
+          name: 'custom-name.js',
+        },
       ];
 
       const lib = proxyquire('../lib/assets', stubs);
@@ -225,7 +222,6 @@ describe('skyux-deploy lib assets', () => {
   });
 
   describe('getEmittedAssets', () => {
-
     it('should return an empty array if no assets folder', () => {
       const lib = require('../lib/assets');
       expect(lib.getEmittedAssets()).toEqual([]);
@@ -240,44 +236,68 @@ describe('skyux-deploy lib assets', () => {
 
     it('should return an array of names/files from the assets folder', () => {
       spyOn(glob, 'sync').and.returnValue([
-        path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg')
+        path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg'),
       ]);
       const lib = require('../lib/assets');
       expect(lib.getEmittedAssets()).toEqual([
         {
           name: path.join('assets', 'nested', 'my-file.jpg'),
-          file: path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg')
-        }
+          file: path.join(
+            process.cwd(),
+            'dist',
+            'assets',
+            'nested',
+            'my-file.jpg'
+          ),
+        },
       ]);
     });
 
     it('should include version assets if static client', () => {
       spyOn(glob, 'sync').and.returnValue([
-        path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg')
+        path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg'),
       ]);
       const lib = require('../lib/assets');
       expect(lib.getEmittedAssets(true, '1.2.3-rc.0')).toEqual([
         {
           name: path.join('1.2.3-rc.0', 'assets', 'nested', 'my-file.jpg'),
-          file: path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg')
-        }
+          file: path.join(
+            process.cwd(),
+            'dist',
+            'assets',
+            'nested',
+            'my-file.jpg'
+          ),
+        },
       ]);
     });
 
     it('should include version and major version assets if static client', () => {
       spyOn(glob, 'sync').and.returnValue([
-        path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg')
+        path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg'),
       ]);
       const lib = require('../lib/assets');
       expect(lib.getEmittedAssets(true, '1.2.3')).toEqual([
         {
           name: path.join('1.2.3', 'assets', 'nested', 'my-file.jpg'),
-          file: path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg')
+          file: path.join(
+            process.cwd(),
+            'dist',
+            'assets',
+            'nested',
+            'my-file.jpg'
+          ),
         },
         {
           name: path.join('1', 'assets', 'nested', 'my-file.jpg'),
-          file: path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg')
-        }
+          file: path.join(
+            process.cwd(),
+            'dist',
+            'assets',
+            'nested',
+            'my-file.jpg'
+          ),
+        },
       ]);
     });
 
@@ -288,11 +308,9 @@ describe('skyux-deploy lib assets', () => {
       const lib = require('../lib/assets');
 
       lib.getEmittedAssets();
-      expect(glob.sync).toHaveBeenCalledWith(
-        path.join(assets, '**', '*.*'),
-        { nodir: true }
-      )
+      expect(glob.sync).toHaveBeenCalledWith(path.join(assets, '**', '*.*'), {
+        nodir: true,
+      });
     });
   });
-
 });

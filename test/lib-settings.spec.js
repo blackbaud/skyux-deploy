@@ -1,7 +1,6 @@
 'use strict';
 
 describe('skyux-deploy lib settings', () => {
-
   const fs = require('fs-extra');
   const logger = require('@blackbaud/skyux-logger');
 
@@ -16,13 +15,13 @@ describe('skyux-deploy lib settings', () => {
         return {
           name: 'default-name',
           version: 'custom-version',
-          test1: 'value1'
+          test1: 'value1',
         };
       }
 
       if (filename.indexOf('skyuxconfig.json') > -1) {
         return {
-          test2: 'value2'
+          test2: 'value2',
         };
       }
 
@@ -40,7 +39,7 @@ describe('skyux-deploy lib settings', () => {
 
   it('should return settings, merging package.json with arguments', () => {
     testGetSettings('custom-name1', {
-      name: 'custom-name1'
+      name: 'custom-name1',
     });
   });
 
@@ -49,13 +48,12 @@ describe('skyux-deploy lib settings', () => {
   });
 
   it('should return settings even if package.json does not exist', () => {
-
     spyOn(logger, 'error');
     spyOn(fs, 'existsSync').and.returnValue(false);
 
     const lib = require('../lib/settings');
     const settings = lib.getSettings({
-      name: 'custom-name2'
+      name: 'custom-name2',
     });
 
     expect(settings.name).toEqual('custom-name2');
@@ -66,7 +64,7 @@ describe('skyux-deploy lib settings', () => {
     const lib = require('../lib/settings');
     const settings = lib.getSettings({
       name: 'foobar',
-      hashFileNames: false
+      hashFileNames: false,
     });
 
     expect(settings.hashFileNames).toEqual(false);
@@ -76,7 +74,7 @@ describe('skyux-deploy lib settings', () => {
     const lib = require('../lib/settings');
     const settings = lib.getSettings({
       name: 'foobar',
-      rootElementTagName: 'app-root'
+      rootElementTagName: 'app-root',
     });
 
     expect(settings.rootElementTagName).toEqual('app-root');

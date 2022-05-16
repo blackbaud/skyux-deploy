@@ -1,7 +1,6 @@
 'use strict';
 
 describe('skyux-deploy lib publish static', () => {
-
   const mock = require('mock-require');
 
   let azureMock;
@@ -9,7 +8,7 @@ describe('skyux-deploy lib publish static', () => {
 
   beforeEach(() => {
     azureMock = {
-      registerEntityToTable: jasmine.createSpy('registerEntityToTable')
+      registerEntityToTable: jasmine.createSpy('registerEntityToTable'),
     };
 
     mock('../lib/azure', azureMock);
@@ -19,30 +18,28 @@ describe('skyux-deploy lib publish static', () => {
 
   afterEach(() => {
     mock.stopAll();
-  })
+  });
 
   it('should create an entity and call registerEntityToTable', () => {
-
     lib({
       name: 'custom-name',
       version: 'custom-version',
-      test: true
+      test: true,
     });
 
     expect(azureMock.registerEntityToTable).toHaveBeenCalledWith(
       {
         name: 'custom-name',
         version: 'custom-version',
-        test: true
+        test: true,
       },
       {
         partitionKey: 'custom-name',
         rowKey: '__default',
-        Version: 'custom-version'
+        Version: 'custom-version',
       }
     );
 
     mock.stopAll();
   });
-
 });

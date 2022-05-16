@@ -11,10 +11,10 @@ describe('skyux-deploy lib portal', () => {
       url,
       {
         headers: {
-          'X-BB-Shared-Key': sharedKey
+          'X-BB-Shared-Key': sharedKey,
         },
         method,
-        json: spa
+        json: spa,
       },
       jasmine.any(Function)
     );
@@ -22,35 +22,31 @@ describe('skyux-deploy lib portal', () => {
 
   function mockError() {
     const expectedError = {
-      message: 'Forbidden'
+      message: 'Forbidden',
     };
 
     requestMock.and.callFake((url, options, callback) => {
-      callback(
-        undefined,
-        {
-          statusCode: 403,
-          body: [
-            {
-              message: 'Forbidden'
-            }
-          ]
-        }
-      )
+      callback(undefined, {
+        statusCode: 403,
+        body: [
+          {
+            message: 'Forbidden',
+          },
+        ],
+      });
     });
 
     return expectedError;
   }
 
   beforeEach(() => {
-    requestMock = jasmine.createSpy('request').and.callFake((url, options, callback) => {
-      callback(
-        undefined,
-        {
-          statusCode: 200
-        }
-      )
-    });
+    requestMock = jasmine
+      .createSpy('request')
+      .and.callFake((url, options, callback) => {
+        callback(undefined, {
+          statusCode: 200,
+        });
+      });
 
     mock('request', requestMock);
 
@@ -62,12 +58,11 @@ describe('skyux-deploy lib portal', () => {
   });
 
   describe('deploySpa() method', () => {
-
     it('should make the expected request', async () => {
       await portal.deploySpa(
         'abc',
         {
-          name: 'spa-name'
+          name: 'spa-name',
         },
         'version1'
       );
@@ -77,7 +72,7 @@ describe('skyux-deploy lib portal', () => {
         `${portal.baseUrl}spas/spa-name/versions/version1`,
         'abc',
         {
-          name: 'spa-name'
+          name: 'spa-name',
         }
       );
     });
@@ -85,51 +80,40 @@ describe('skyux-deploy lib portal', () => {
     it('should handle a non-200 response', async () => {
       var expectedError = mockError();
 
-      await expectAsync(portal.deploySpa(
-        'abc',
-        {
-          name: 'spa-name'
-        },
-        'version1'
-      )).toBeRejectedWith(expectedError);
+      await expectAsync(
+        portal.deploySpa(
+          'abc',
+          {
+            name: 'spa-name',
+          },
+          'version1'
+        )
+      ).toBeRejectedWith(expectedError);
     });
-
   });
 
   describe('publishSpa() method', () => {
-
     it('should make the expected request', () => {
-      portal.publishSpa(
-        'abc',
-        {
-          name: 'spa-name',
-          version: 'version1'
-        }
-      );
+      portal.publishSpa('abc', {
+        name: 'spa-name',
+        version: 'version1',
+      });
 
-      validateSuccess(
-        'PUT',
-        `${portal.baseUrl}spas/spa-name/release`,
-        'abc',
-        {
-          name: 'spa-name',
-          version: 'version1'
-        }
-      );
+      validateSuccess('PUT', `${portal.baseUrl}spas/spa-name/release`, 'abc', {
+        name: 'spa-name',
+        version: 'version1',
+      });
     });
 
     it('should handle a non-200 response', async () => {
       var expectedError = mockError();
 
-      await expectAsync(portal.publishSpa(
-        'abc',
-        {
+      await expectAsync(
+        portal.publishSpa('abc', {
           name: 'spa-name',
-          version: 'version1'
-        }
-      )).toBeRejectedWith(expectedError);
+          version: 'version1',
+        })
+      ).toBeRejectedWith(expectedError);
     });
-
   });
-
 });

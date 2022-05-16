@@ -15,19 +15,19 @@ Deployment package for skyux apps.
 
 ## Options
 
-All of the following options are required and overridable via the CLI.  For example, to set the name of the SPA the command would be:
+All of the following options are required and overridable via the CLI. For example, to set the name of the SPA the command would be:
 
 `skyux-deploy --name MySPA`
 
-| Option                  | Default |
-| ----------------------- | ------- |
-| `name`                  | `null` |
+| Option                  | Default                              |
+| ----------------------- | ------------------------------------ |
+| `name`                  | `null`                               |
 | `version`               | `version` property in `package.json` |
-| `azureStorageAccount`   | `null`  |
-| `azureStorageAccessKey` | `null`  |
-| `azureStorageTableName` | "spa"   |
-| `isStaticClient`        | `false` |
-| `hashFileNames`         | `true`  |
-| `rootElementTagName`    | `null`  |
+| `azureStorageAccount`   | `null`                               |
+| `azureStorageAccessKey` | `null`                               |
+| `azureStorageTableName` | "spa"                                |
+| `isStaticClient`        | `false`                              |
+| `hashFileNames`         | `true`                               |
+| `rootElementTagName`    | `null`                               |
 
 `null` values are typically supplied by the CI process.

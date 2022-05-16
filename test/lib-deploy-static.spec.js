@@ -1,7 +1,6 @@
 'use strict';
 
 describe('skyux-deploy lib deploy static', () => {
-
   const mock = require('mock-require');
   const logger = require('@blackbaud/skyux-logger');
 
@@ -18,16 +17,20 @@ describe('skyux-deploy lib deploy static', () => {
       {
         name: 'my-asset.js',
         content: 'my-content',
-        type: 'script'
-      }
+        type: 'script',
+      },
     ];
 
     assetsMock = {
-      getDistAssets: jasmine.createSpy('getDistAssets').and.returnValue(distAsset)
+      getDistAssets: jasmine
+        .createSpy('getDistAssets')
+        .and.returnValue(distAsset),
     };
 
     azureMock = {
-      registerEntityToTable: jasmine.createSpy('registerEntityToTable').and.returnValue(Promise.resolve())
+      registerEntityToTable: jasmine
+        .createSpy('registerEntityToTable')
+        .and.returnValue(Promise.resolve()),
     };
 
     mock('../lib/assets', assetsMock);
@@ -47,27 +50,24 @@ describe('skyux-deploy lib deploy static', () => {
       name: 'custom-name2',
       version: 'custom-version2',
       skyuxConfig: { test1: true },
-      packageConfig: { test2: true }
+      packageConfig: { test2: true },
     };
 
     await lib(settings);
 
-    expect(azureMock.registerEntityToTable).toHaveBeenCalledWith(
-      settings,
-      {
-        partitionKey: 'custom-name2',
-        rowKey: 'custom-version2',
-        SkyUXConfig: JSON.stringify(settings.skyuxConfig),
-        PackageConfig: JSON.stringify(settings.packageConfig),
-        Scripts: JSON.stringify(distAsset)
-      }
-    );
+    expect(azureMock.registerEntityToTable).toHaveBeenCalledWith(settings, {
+      partitionKey: 'custom-name2',
+      rowKey: 'custom-version2',
+      SkyUXConfig: JSON.stringify(settings.skyuxConfig),
+      PackageConfig: JSON.stringify(settings.packageConfig),
+      Scripts: JSON.stringify(distAsset),
+    });
   });
 
   it('should call registerEntityToTable with style sheets if they exist', async () => {
     distAsset.push({
       name: 'styles.css',
-      type: 'stylesheet'
+      type: 'stylesheet',
     });
 
     const settings = {
@@ -76,19 +76,19 @@ describe('skyux-deploy lib deploy static', () => {
       name: 'custom-name2',
       version: 'custom-version2',
       skyuxConfig: { test1: true },
-      packageConfig: { test2: true }
+      packageConfig: { test2: true },
     };
 
     await lib(settings);
 
-    expect(azureMock.registerEntityToTable.calls.mostRecent().args[1].Stylesheets).toEqual(
-      '[{"name":"styles.css","type":"stylesheet"}]'
-    );
+    expect(
+      azureMock.registerEntityToTable.calls.mostRecent().args[1].Stylesheets
+    ).toEqual('[{"name":"styles.css","type":"stylesheet"}]');
   });
 
   it('should log a warning if version is invalid', async () => {
     const settings = {
-      version: 'INVALID_VERSION'
+      version: 'INVALID_VERSION',
     };
 
     await lib(settings);
@@ -101,7 +101,7 @@ describe('skyux-deploy lib deploy static', () => {
 
   it('should log a warning if version is pre-release', async () => {
     const settings = {
-      version: '1.2.3-rc.0'
+      version: '1.2.3-rc.0',
     };
 
     await lib(settings);
@@ -119,32 +119,25 @@ describe('skyux-deploy lib deploy static', () => {
       name: 'custom-name3',
       version: '3.2.1',
       skyuxConfig: { test1: true },
-      packageConfig: { test2: true }
+      packageConfig: { test2: true },
     };
 
     await lib(settings);
 
-    expect(azureMock.registerEntityToTable).toHaveBeenCalledWith(
-      settings,
-      {
-        partitionKey: 'custom-name3',
-        rowKey: '3',
-        SkyUXConfig: JSON.stringify(settings.skyuxConfig),
-        PackageConfig: JSON.stringify(settings.packageConfig),
-        Scripts: JSON.stringify(distAsset)
-      }
-    );
+    expect(azureMock.registerEntityToTable).toHaveBeenCalledWith(settings, {
+      partitionKey: 'custom-name3',
+      rowKey: '3',
+      SkyUXConfig: JSON.stringify(settings.skyuxConfig),
+      PackageConfig: JSON.stringify(settings.packageConfig),
+      Scripts: JSON.stringify(distAsset),
+    });
 
-    expect(azureMock.registerEntityToTable).toHaveBeenCalledWith(
-      settings,
-      {
-        partitionKey: 'custom-name3',
-        rowKey: '3-latest',
-        SkyUXConfig: JSON.stringify(settings.skyuxConfig),
-        PackageConfig: JSON.stringify(settings.packageConfig),
-        Scripts: JSON.stringify(distAsset)
-      }
-    );
+    expect(azureMock.registerEntityToTable).toHaveBeenCalledWith(settings, {
+      partitionKey: 'custom-name3',
+      rowKey: '3-latest',
+      SkyUXConfig: JSON.stringify(settings.skyuxConfig),
+      PackageConfig: JSON.stringify(settings.packageConfig),
+      Scripts: JSON.stringify(distAsset),
+    });
   });
-
 });
