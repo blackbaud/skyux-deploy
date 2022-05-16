@@ -1,7 +1,6 @@
 'use strict';
 
 describe('skyux-deploy lib deploy SPA', () => {
-
   const mock = require('mock-require');
   const logger = require('@blackbaud/skyux-logger');
 
@@ -18,18 +17,20 @@ describe('skyux-deploy lib deploy SPA', () => {
       {
         name: 'my-asset.js',
         content: 'my-content',
-        type: 'script'
-      }
+        type: 'script',
+      },
     ];
 
     assetsMock = {
-      getDistAssets: jasmine.createSpy('getDistAssets')
-        .and
-        .returnValue(mockAssets),
+      getDistAssets: jasmine
+        .createSpy('getDistAssets')
+        .and.returnValue(mockAssets),
     };
 
     portalMock = {
-      deploySpa: jasmine.createSpy('deploySpa').and.returnValue(Promise.resolve())
+      deploySpa: jasmine
+        .createSpy('deploySpa')
+        .and.returnValue(Promise.resolve()),
     };
 
     mock('../lib/assets', assetsMock);
@@ -43,33 +44,31 @@ describe('skyux-deploy lib deploy SPA', () => {
   });
 
   it('should call deploySpa with the expected parameters', async () => {
-    await lib(
-      {
-        azureStorageAccessKey: 'abc',
-        name: 'custom-name2',
-        version: 'custom-version2',
-        skyuxConfig: { test1: true },
-        packageConfig: { test2: true }
-      }
-    );
+    await lib({
+      azureStorageAccessKey: 'abc',
+      name: 'custom-name2',
+      version: 'custom-version2',
+      skyuxConfig: { test1: true },
+      packageConfig: { test2: true },
+    });
 
     expect(portalMock.deploySpa).toHaveBeenCalledWith(
       'abc',
       {
         name: 'custom-name2',
         sky_ux_config: {
-          test1: true
+          test1: true,
         },
         package_config: {
-          test2: true
+          test2: true,
         },
         scripts: [
           {
             name: 'my-asset.js',
             content: 'my-content',
-            type: 'script'
-          }
-        ]
+            type: 'script',
+          },
+        ],
       },
       'custom-version2'
     );
@@ -82,14 +81,11 @@ describe('skyux-deploy lib deploy SPA', () => {
       version: 'custom-version2',
       rootElementTagName: 'app-root',
       skyuxConfig: { test1: true },
-      packageConfig: { test2: true }
+      packageConfig: { test2: true },
     });
 
-    const actualTagName = portalMock.deploySpa
-      .calls
-      .mostRecent()
-      .args[1]
-      .root_element_tag_name;
+    const actualTagName =
+      portalMock.deploySpa.calls.mostRecent().args[1].root_element_tag_name;
 
     expect(actualTagName).toEqual('app-root');
   });
@@ -97,25 +93,24 @@ describe('skyux-deploy lib deploy SPA', () => {
   it('should call deploySpa with style sheets', async () => {
     mockAssets.push({
       name: 'styles.css',
-      type: 'stylesheet'
+      type: 'stylesheet',
     });
 
-    await lib(
-      {
-        azureStorageAccessKey: 'abc',
-        name: 'custom-name2',
-        version: 'custom-version2',
-        skyuxConfig: { test1: true },
-        packageConfig: { test2: true }
-      }
+    await lib({
+      azureStorageAccessKey: 'abc',
+      name: 'custom-name2',
+      version: 'custom-version2',
+      skyuxConfig: { test1: true },
+      packageConfig: { test2: true },
+    });
+
+    expect(portalMock.deploySpa.calls.mostRecent().args[1].stylesheets).toEqual(
+      [
+        {
+          name: 'styles.css',
+          type: 'stylesheet',
+        },
+      ]
     );
-
-    expect(portalMock.deploySpa.calls.mostRecent().args[1].stylesheets).toEqual([
-      {
-        name: 'styles.css',
-        type: 'stylesheet'
-      }
-    ]);
   });
-
 });

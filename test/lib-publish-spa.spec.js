@@ -1,7 +1,6 @@
 'use strict';
 
 describe('skyux-deploy lib publish SPA', () => {
-
   const mock = require('mock-require');
 
   let portalMock;
@@ -9,7 +8,9 @@ describe('skyux-deploy lib publish SPA', () => {
 
   beforeEach(() => {
     portalMock = {
-      publishSpa: jasmine.createSpy('publishSpa').and.returnValue(Promise.resolve())
+      publishSpa: jasmine
+        .createSpy('publishSpa')
+        .and.returnValue(Promise.resolve()),
     };
 
     mock('../lib/portal', portalMock);
@@ -25,16 +26,12 @@ describe('skyux-deploy lib publish SPA', () => {
     lib({
       azureStorageAccessKey: 'abc',
       name: 'custom-name',
-      version: 'custom-version'
+      version: 'custom-version',
     });
 
-    expect(portalMock.publishSpa).toHaveBeenCalledWith(
-      'abc',
-      {
-        name: 'custom-name',
-        version: 'custom-version'
-      }
-    );
+    expect(portalMock.publishSpa).toHaveBeenCalledWith('abc', {
+      name: 'custom-name',
+      version: 'custom-version',
+    });
   });
-
 });

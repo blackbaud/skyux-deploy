@@ -1,14 +1,13 @@
 'use strict';
 
 describe('skyux-deploy lib utils', () => {
-
   const mock = require('mock-require');
   const logger = require('@blackbaud/skyux-logger');
 
   const semverSpy = jasmine.createSpyObj('semver', [
     'valid',
     'prerelease',
-    'major'
+    'major',
   ]);
 
   let utils;
@@ -32,7 +31,6 @@ describe('skyux-deploy lib utils', () => {
     });
 
     it('should return the major version if the version valid and not a pre-release', () => {
-
       const majorVersion = 1; // Purposefully a number
 
       semverSpy.valid.and.returnValue(true);
@@ -51,7 +49,9 @@ describe('skyux-deploy lib utils', () => {
 
     it('should log special "already exists" error', () => {
       utils.handleError('already exists');
-      expect(logger.error).toHaveBeenCalledWith('Already been registered in table storage.');
+      expect(logger.error).toHaveBeenCalledWith(
+        'Already been registered in table storage.'
+      );
     });
 
     it('should log generic error', () => {
@@ -87,7 +87,7 @@ describe('skyux-deploy lib utils', () => {
   describe('validate', () => {
     it('should log error if no assets', () => {
       const validated = utils.validate([], {
-        name: 'test'
+        name: 'test',
       });
       expect(validated).toEqual(false);
       expect(logger.error).toHaveBeenCalledWith(
@@ -102,16 +102,12 @@ describe('skyux-deploy lib utils', () => {
         version: '',
         azureStorageAccount: '',
         azureStorageAccessKey: '',
-        azureStorageTableName: ''
+        azureStorageTableName: '',
       };
       const validated = utils.validate(assets, settings);
 
       expect(validated).toEqual(false);
-      expect(logger.error).toHaveBeenCalledWith(
-        '%s is required.',
-        'name'
-      );
+      expect(logger.error).toHaveBeenCalledWith('%s is required.', 'name');
     });
   });
-
 });

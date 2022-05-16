@@ -62,7 +62,7 @@ describe('skyux-deploy lib azure', () => {
 
       await expectAsync(lib.compress('some text')).toBeResolvedTo({
         brotli: 'abc',
-        gzip: 'xyz'
+        gzip: 'xyz',
       });
     });
   });
@@ -96,7 +96,7 @@ describe('skyux-deploy lib azure', () => {
 
       await expectAsync(lib.compressFile('file1.txt')).toBeResolvedTo({
         brotli: 'abc',
-        gzip: 'xyz'
+        gzip: 'xyz',
       });
     });
   });
