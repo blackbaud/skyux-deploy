@@ -1,6 +1,6 @@
 {
   "name": "@blackbaud/skyux-deploy",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Deployment package for skyux apps",
   "main": "index.js",
   "bin": {
@@ -27,11 +27,13 @@
     "@azure/data-tables": "13.1.1",
     "@azure/storage-blob": "12.9.0",
     "@blackbaud/skyux-logger": "1.2.1",
+    "brotli": "1.3.2",
     "fs-extra": "7.0.1",
     "glob": "7.1.3",
     "merge": "2.1.1",
     "mime-types": "2.1.35",
     "minimist": "1.2.6",
+    "node-gzip": "1.1.2",
     "request": "2.88.0",
     "semver": "6.1.1"
   },

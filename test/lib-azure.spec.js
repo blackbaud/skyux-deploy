@@ -4,24 +4,20 @@
 describe('skyux-deploy lib azure', () => {
 
   const mock = require('mock-require');
-  // const azure = require('azure-storage');
-  // const utils = require('../lib/utils');
   const logger = require('@blackbaud/skyux-logger');
 
   let lib;
 
+  let mockCompression;
   let mockContainerClient;
   let mockTableClient;
-  let mockBlockBlobClient;
+  let mockBlockBlobClients;
   let mockTable;
   let mockSharedKeyCredential;
   let mockReplaceValue;
 
   beforeEach(() => {
-    mockBlockBlobClient = {
-      upload: jasmine.createSpy('upload').and.resolveTo({}),
-      uploadFile: jasmine.createSpy('uploadFile').and.resolveTo({})
-    };
+    mockBlockBlobClients = {};
 
     mockTable = {
       upsertEntity: jasmine.createSpy('upsertEntity').and.resolveTo()
@@ -29,7 +25,16 @@ describe('skyux-deploy lib azure', () => {
 
     mockContainerClient = {
       createIfNotExists: jasmine.createSpy('createIfNotExists').and.resolveTo(),
-      getBlockBlobClient: jasmine.createSpy('getBlockBlobClient').and.returnValue(mockBlockBlobClient)
+      getBlockBlobClient: jasmine.createSpy('getBlockBlobClient').and.callFake(
+        (name) => {
+          mockBlockBlobClients[name] = mockBlockBlobClients[name] || {
+            upload: jasmine.createSpy('upload').and.resolveTo({}),
+            uploadFile: jasmine.createSpy('uploadFile').and.resolveTo({})
+          };
+
+          return mockBlockBlobClients[name];
+        }
+      )
     };
 
     mockTableClient = {
@@ -64,11 +69,25 @@ describe('skyux-deploy lib azure', () => {
       }
     });
 
-    lib = require('../lib/azure');
+    mockCompression = jasmine.createSpyObj(
+      'compression',
+      [
+        'canBeCompressed',
+        'compress',
+        'compressFile'
+      ]
+    );
+
+    mock(
+      '../lib/compression',
+      mockCompression
+    );
+
+    lib = mock.reRequire('../lib/azure');
   });
 
   afterEach(() => {
-    mock.stop('azure-storage');
+    mock.stopAll();
   });
 
   it('should expose a registerAssetsToBlob method', () => {
@@ -131,19 +150,27 @@ describe('skyux-deploy lib azure', () => {
         assets[0].name
       );
 
-      expect(mockBlockBlobClient.upload).toHaveBeenCalledWith(
+      expect(mockBlockBlobClients[assets[0].name].upload).toHaveBeenCalledWith(
         assets[0].content,
         assets[0].content.length,
         {
           blobHTTPHeaders: {
-            blobContentType: 'application/javascript'
+            blobContentType: 'application/octet-stream'
           }
         }
       );
     });
 
-    it('should publish CSS files with the appropriate content type', async () => {
+    it('should publish CSS files with the appropriate content type and compressed files', async () => {
       spyOn(logger, 'info');
+
+      mockCompression.canBeCompressed.and.callFake((contentType) => contentType === 'text/css');
+      mockCompression.compress.and.callFake(() => {
+        return {
+          brotli: 'abc',
+          gzip: 'xyz'
+        };
+      });
 
       const settings = { name: 'blob-name2' };
       const assets = [{
@@ -153,12 +180,36 @@ describe('skyux-deploy lib azure', () => {
 
       await lib.registerAssetsToBlob(settings, assets);
 
-      expect(mockBlockBlobClient.upload).toHaveBeenCalledWith(
+      expect(mockBlockBlobClients[assets[0].name].upload).toHaveBeenCalledWith(
         assets[0].content,
         assets[0].content.length,
         {
           blobHTTPHeaders: {
             blobContentType: 'text/css'
+          },
+          metadata: {
+            brotli: '1',
+            gzip: '1'
+          }
+        }
+      );
+
+      expect(mockBlockBlobClients[assets[0].name + '.br'].upload).toHaveBeenCalledWith(
+        'abc',
+        3,
+        {
+          blobHTTPHeaders: {
+            blobContentType: 'application/octet-stream'
+          }
+        }
+      );
+
+      expect(mockBlockBlobClients[assets[0].name + '.gz'].upload).toHaveBeenCalledWith(
+        'xyz',
+        3,
+        {
+          blobHTTPHeaders: {
+            blobContentType: 'application/gzip'
           }
         }
       );
@@ -193,11 +244,63 @@ describe('skyux-deploy lib azure', () => {
         assets[0].name
       );
 
-      expect(mockBlockBlobClient.uploadFile).toHaveBeenCalledWith(
+      expect(mockBlockBlobClients[assets[0].name].uploadFile).toHaveBeenCalledWith(
         assets[0].file,
         {
           blobHTTPHeaders: {
             blobContentType: 'image/jpeg'
+          }
+        }
+      );
+    });
+
+
+    it('should call BlockBlobClient.uploadFile() and upload compressed versions', async () => {
+      mockCompression.canBeCompressed.and.callFake((contentType) => contentType === 'application/javascript');
+      mockCompression.compressFile.and.callFake(() => {
+        return {
+          brotli: 'abc',
+          gzip: 'xyz'
+        };
+      });
+
+      const settings = { name: 'blob-name3' };
+      const assets = [{
+        name: 'asset-name2.js',
+        file: '/home/assets/asset-name2.js'
+      }];
+
+      await lib.registerAssetsToBlob(settings, assets);
+
+      expect(mockBlockBlobClients[assets[0].name].uploadFile).toHaveBeenCalledWith(
+        assets[0].file,
+        {
+          blobHTTPHeaders: {
+            blobContentType: 'application/javascript'
+          },
+          metadata: {
+            brotli: '1',
+            gzip: '1'
+          }
+        }
+      );
+
+      expect(mockBlockBlobClients[assets[0].name + '.br'].upload).toHaveBeenCalledWith(
+        'abc',
+        3,
+        {
+          blobHTTPHeaders: {
+            blobContentType: 'application/octet-stream'
+          }
+        }
+      );
+
+      expect(mockBlockBlobClients[assets[0].name + '.gz'].upload).toHaveBeenCalledWith(
+        'xyz',
+        3,
+        {
+          blobHTTPHeaders: {
+            blobContentType: 'application/gzip'
           }
         }
       );
@@ -216,7 +319,7 @@ describe('skyux-deploy lib azure', () => {
         assets[0].name
       );
 
-      expect(mockBlockBlobClient.uploadFile).toHaveBeenCalledWith(
+      expect(mockBlockBlobClients[assets[0].name].uploadFile).toHaveBeenCalledWith(
         assets[0].file,
         {
           blobHTTPHeaders: {
@@ -234,7 +337,7 @@ describe('skyux-deploy lib azure', () => {
         file: '/home/assets/asset-name3.jpg'
       }];
 
-      mockBlockBlobClient.uploadFile.and.rejectWith(testError);
+      mockContainerClient.getBlockBlobClient(assets[0].name).uploadFile.and.rejectWith(testError);
 
       spyOn(logger, 'error');
       await expectAsync(lib.registerAssetsToBlob(settings, assets)).toBeRejectedWith(testError);

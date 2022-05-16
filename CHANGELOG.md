@@ -1,3 +1,7 @@
+# 2.1.0 (2022-05-16)
+
+- Upload pre-compressed versions of files that can be compressed. [#86](https://github.com/blackbaud/skyux-deploy/pull/86)
+
 # 2.0.0 (2022-05-12)
 
 - 2.0.0 major release. [#85](https://github.com/blackbaud/skyux-deploy/pull/85)
