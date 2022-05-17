@@ -59,7 +59,7 @@ describe('skyux-deploy lib azure', () => {
         mockTableClient.__ctorArgs = args;
         return mockTableClient;
       },
-      StorageSharedKeyCredential: function (...args) {
+      AzureNamedKeyCredential: function (...args) {
         mockSharedKeyCredential.__ctorArgs = args;
         return mockSharedKeyCredential;
       },
@@ -416,7 +416,7 @@ describe('skyux-deploy lib azure', () => {
       );
 
       expect(logger.info).toHaveBeenCalledWith(
-        'SPA %s registered in table storage.',
+        '%s registered in table storage.',
         settings.name
       );
     });
