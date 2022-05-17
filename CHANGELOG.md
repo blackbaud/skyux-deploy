@@ -1,3 +1,7 @@
+# 2.1.1 (2022-05-17)
+
+- Updated `@blackbaud/skyux-logger` to version `1.2.2`.
+
 # 2.1.0 (2022-05-16)
 
 - Upload pre-compressed versions of files that can be compressed. [#86](https://github.com/blackbaud/skyux-deploy/pull/86)
