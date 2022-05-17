@@ -1,3 +1,7 @@
+# 2.1.2 (2022-05-17)
+
+- Fixed issue with uploading static library metadata to table storage. [#89](https://github.com/blackbaud/skyux-deploy/pull/89)
+
 # 2.1.1 (2022-05-17)
 
 - Updated `@blackbaud/skyux-logger` to version `1.2.2`. [#88](https://github.com/blackbaud/skyux-deploy/pull/88)
