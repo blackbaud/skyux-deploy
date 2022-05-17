@@ -11,16 +11,10 @@ describe('skyux-deploy lib azure', () => {
   let mockContainerClient;
   let mockTableClient;
   let mockBlockBlobClients;
-  let mockTable;
   let mockSharedKeyCredential;
-  let mockReplaceValue;
 
   beforeEach(() => {
     mockBlockBlobClients = {};
-
-    mockTable = {
-      upsertEntity: jasmine.createSpy('upsertEntity').and.resolveTo(),
-    };
 
     mockContainerClient = {
       createIfNotExists: jasmine.createSpy('createIfNotExists').and.resolveTo(),
@@ -37,11 +31,11 @@ describe('skyux-deploy lib azure', () => {
     };
 
     mockTableClient = {
-      createTable: jasmine.createSpy('createTable').and.resolveTo(mockTable),
+      createTable: jasmine.createSpy('createTable').and.resolveTo(),
+      upsertEntity: jasmine.createSpy('upsertEntity').and.resolveTo(),
     };
 
     mockSharedKeyCredential = {};
-    mockReplaceValue = 'REPLACE';
 
     mock('@azure/storage-blob', {
       ContainerClient: function (...args) {
@@ -59,12 +53,9 @@ describe('skyux-deploy lib azure', () => {
         mockTableClient.__ctorArgs = args;
         return mockTableClient;
       },
-      StorageSharedKeyCredential: function (...args) {
+      AzureNamedKeyCredential: function (...args) {
         mockSharedKeyCredential.__ctorArgs = args;
         return mockSharedKeyCredential;
-      },
-      UpdateMode: {
-        Replace: mockReplaceValue,
       },
     });
 
@@ -410,13 +401,13 @@ describe('skyux-deploy lib azure', () => {
       spyOn(logger, 'info');
       await lib.registerEntityToTable(settings, entity);
 
-      expect(mockTable.upsertEntity).toHaveBeenCalledWith(
+      expect(mockTableClient.upsertEntity).toHaveBeenCalledWith(
         entity,
-        mockReplaceValue
+        'Replace'
       );
 
       expect(logger.info).toHaveBeenCalledWith(
-        'SPA %s registered in table storage.',
+        '%s registered in table storage.',
         settings.name
       );
     });
@@ -425,7 +416,7 @@ describe('skyux-deploy lib azure', () => {
       spyOn(logger, 'error');
       const testError = new Error('error6');
 
-      mockTable.upsertEntity.and.rejectWith(testError);
+      mockTableClient.upsertEntity.and.rejectWith(testError);
 
       await expectAsync(lib.registerEntityToTable({}, {})).toBeRejectedWith(
         testError
