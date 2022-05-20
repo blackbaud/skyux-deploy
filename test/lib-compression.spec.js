@@ -14,7 +14,7 @@ describe('skyux-deploy lib azure', () => {
 
   beforeEach(() => {
     mockBrotli = jasmine.createSpyObj('brotli', ['compress']);
-    mockFs = jasmine.createSpyObj('fs-extra', ['readFile']);
+    mockFs = jasmine.createSpyObj('fs-extra', ['readFile', 'stat']);
     mockGzip = jasmine.createSpyObj('node-gzip', ['gzip']);
 
     mock('brotli', mockBrotli);
@@ -29,11 +29,58 @@ describe('skyux-deploy lib azure', () => {
   });
 
   describe('canBeCompressed()', () => {
-    it('should return value indicating whether the specified content type can be compressed', () => {
-      expect(lib.canBeCompressed('text/css')).toBeTrue();
-      expect(lib.canBeCompressed('application/javascript')).toBeTrue();
-      expect(lib.canBeCompressed('application/jpeg')).toBeFalse();
-      expect(lib.canBeCompressed('application/octet-stream')).toBeFalse();
+    it('should return value indicating whether the specified content type can be compressed based on the asset content size', async () => {
+      function createTestAsset(length) {
+        return {
+          content: {
+            length,
+          },
+        };
+      }
+
+      expect(
+        await lib.canBeCompressed(createTestAsset(999), 'text/css')
+      ).toBeFalse();
+      expect(
+        await lib.canBeCompressed(createTestAsset(1000), 'text/css')
+      ).toBeTrue();
+    });
+
+    it('should return value indicating whether the specified content type can be compressed based on the asset file size', async () => {
+      let fakeFileSize = 0;
+
+      mockFs.stat.and.callFake(() => {
+        return Promise.resolve({
+          size: fakeFileSize,
+        });
+      });
+
+      const asset = {
+        file: 'test.css',
+      };
+
+      fakeFileSize = 999;
+      expect(await lib.canBeCompressed(asset, 'text/css')).toBeFalse();
+
+      fakeFileSize = 1000;
+      expect(await lib.canBeCompressed(asset, 'text/css')).toBeTrue();
+    });
+
+    it('should return value indicating whether the specified content type can be compressed when the file size is over the minimum value', async () => {
+      const asset = {
+        content: {
+          length: 1001,
+        },
+      };
+
+      expect(await lib.canBeCompressed(asset, 'text/css')).toBeTrue();
+      expect(
+        await lib.canBeCompressed(asset, 'application/javascript')
+      ).toBeTrue();
+      expect(await lib.canBeCompressed(asset, 'application/jpeg')).toBeFalse();
+      expect(
+        await lib.canBeCompressed(asset, 'application/octet-stream')
+      ).toBeFalse();
     });
   });
 

@@ -149,8 +149,8 @@ describe('skyux-deploy lib azure', () => {
     it('should publish CSS files with the appropriate content type and compressed files', async () => {
       spyOn(logger, 'info');
 
-      mockCompression.canBeCompressed.and.callFake(
-        (contentType) => contentType === 'text/css'
+      mockCompression.canBeCompressed.and.callFake((_asset, contentType) =>
+        Promise.resolve(contentType === 'text/css')
       );
       mockCompression.compress.and.callFake(() => {
         return {
@@ -245,8 +245,8 @@ describe('skyux-deploy lib azure', () => {
     });
 
     it('should call BlockBlobClient.uploadFile() and upload compressed versions', async () => {
-      mockCompression.canBeCompressed.and.callFake(
-        (contentType) => contentType === 'application/javascript'
+      mockCompression.canBeCompressed.and.callFake((_asset, contentType) =>
+        Promise.resolve(contentType === 'application/javascript')
       );
       mockCompression.compressFile.and.callFake(() => {
         return {

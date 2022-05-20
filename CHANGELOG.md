@@ -1,3 +1,7 @@
+# 2.2.0 (2022-05-20)
+
+- Updated precompression logic to not compress files under 1KB. [#90](https://github.com/blackbaud/skyux-deploy/pull/90)
+
 # 2.1.2 (2022-05-17)
 
 - Fixed issue with uploading static library metadata to table storage. [#89](https://github.com/blackbaud/skyux-deploy/pull/89)
