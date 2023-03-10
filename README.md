@@ -29,5 +29,6 @@ All of the following options are required and overridable via the CLI. For examp
 | `isStaticClient`        | `false`                              |
 | `hashFileNames`         | `true`                               |
 | `rootElementTagName`    | `null`                               |
+| `assetsDirectory`       | "assets"                             |
 
 `null` values are typically supplied by the CI process.
