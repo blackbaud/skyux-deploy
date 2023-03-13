@@ -6,6 +6,7 @@ describe('skyux-deploy lib assets', () => {
   const path = require('path');
   const glob = require('glob');
   const proxyquire = require('proxyquire').noCallThru();
+  const DEFAULT_ASSETS_GLOB = 'assets/**/*.*';
 
   beforeEach(() => {
     spyOn(fs, 'statSync').and.returnValue({
@@ -224,14 +225,18 @@ describe('skyux-deploy lib assets', () => {
   describe('getEmittedAssets', () => {
     it('should return an empty array if no assets folder', () => {
       const lib = require('../lib/assets');
-      expect(lib.getEmittedAssets()).toEqual([]);
+      expect(lib.getEmittedAssets(false, '1.0.0', DEFAULT_ASSETS_GLOB)).toEqual(
+        []
+      );
     });
 
     it('should return an empty array if empty assets folder', () => {
       spyOn(fs, 'existsSync').and.returnValue(true);
       spyOn(fs, 'readdirSync').and.returnValue([]);
       const lib = require('../lib/assets');
-      expect(lib.getEmittedAssets()).toEqual([]);
+      expect(lib.getEmittedAssets(false, '1.0.0', DEFAULT_ASSETS_GLOB)).toEqual(
+        []
+      );
     });
 
     it('should return an array of names/files from the assets folder', () => {
@@ -239,18 +244,20 @@ describe('skyux-deploy lib assets', () => {
         path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg'),
       ]);
       const lib = require('../lib/assets');
-      expect(lib.getEmittedAssets()).toEqual([
-        {
-          name: path.join('assets', 'nested', 'my-file.jpg'),
-          file: path.join(
-            process.cwd(),
-            'dist',
-            'assets',
-            'nested',
-            'my-file.jpg'
-          ),
-        },
-      ]);
+      expect(lib.getEmittedAssets(false, '1.0.0', DEFAULT_ASSETS_GLOB)).toEqual(
+        [
+          {
+            name: path.join('assets', 'nested', 'my-file.jpg'),
+            file: path.join(
+              process.cwd(),
+              'dist',
+              'assets',
+              'nested',
+              'my-file.jpg'
+            ),
+          },
+        ]
+      );
     });
 
     it('should include version assets if static client', () => {
@@ -258,7 +265,9 @@ describe('skyux-deploy lib assets', () => {
         path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg'),
       ]);
       const lib = require('../lib/assets');
-      expect(lib.getEmittedAssets(true, '1.2.3-rc.0')).toEqual([
+      expect(
+        lib.getEmittedAssets(true, '1.2.3-rc.0', DEFAULT_ASSETS_GLOB)
+      ).toEqual([
         {
           name: path.join('1.2.3-rc.0', 'assets', 'nested', 'my-file.jpg'),
           file: path.join(
@@ -277,7 +286,7 @@ describe('skyux-deploy lib assets', () => {
         path.join(process.cwd(), 'dist', 'assets', 'nested', 'my-file.jpg'),
       ]);
       const lib = require('../lib/assets');
-      expect(lib.getEmittedAssets(true, '1.2.3')).toEqual([
+      expect(lib.getEmittedAssets(true, '1.2.3', DEFAULT_ASSETS_GLOB)).toEqual([
         {
           name: path.join('1.2.3', 'assets', 'nested', 'my-file.jpg'),
           file: path.join(
@@ -304,13 +313,29 @@ describe('skyux-deploy lib assets', () => {
     it('should exclude directories', () => {
       spyOn(glob, 'sync').and.returnValue([]);
 
-      const assets = path.join(process.cwd(), 'dist', 'assets');
       const lib = require('../lib/assets');
 
-      lib.getEmittedAssets();
-      expect(glob.sync).toHaveBeenCalledWith(path.join(assets, '**', '*.*'), {
-        nodir: true,
-      });
+      lib.getEmittedAssets(false, '1.0.0', DEFAULT_ASSETS_GLOB);
+      expect(glob.sync).toHaveBeenCalledWith(
+        path.join(process.cwd(), 'dist', DEFAULT_ASSETS_GLOB),
+        {
+          nodir: true,
+        }
+      );
+    });
+
+    it('should allow overriding assets glob', () => {
+      spyOn(glob, 'sync').and.returnValue([]);
+
+      const lib = require('../lib/assets');
+
+      lib.getEmittedAssets(false, '1.0.0', 'static/**/*');
+      expect(glob.sync).toHaveBeenCalledWith(
+        path.join(process.cwd(), 'dist', 'static/**/*'),
+        {
+          nodir: true,
+        }
+      );
     });
   });
 });
