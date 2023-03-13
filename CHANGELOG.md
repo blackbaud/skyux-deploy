@@ -1,3 +1,7 @@
+# 2.3.0 (2023-03-13)
+
+- Added `--assetsGlob` option. [#92](https://github.com/blackbaud/skyux-deploy/pull/92)
+
 # 2.2.0 (2022-05-20)
 
 - Updated precompression logic to not compress files under 1KB. [#90](https://github.com/blackbaud/skyux-deploy/pull/90)
