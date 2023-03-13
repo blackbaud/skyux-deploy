@@ -323,5 +323,19 @@ describe('skyux-deploy lib assets', () => {
         }
       );
     });
+
+    it('should allow overriding assets glob', () => {
+      spyOn(glob, 'sync').and.returnValue([]);
+
+      const lib = require('../lib/assets');
+
+      lib.getEmittedAssets(false, '1.0.0', 'static/**/*');
+      expect(glob.sync).toHaveBeenCalledWith(
+        path.join(process.cwd(), 'dist', 'static/**/*'),
+        {
+          nodir: true,
+        }
+      );
+    });
   });
 });
