@@ -94,6 +94,23 @@ describe('skyux-deploy lib deploy', () => {
     expect(logger.error).toHaveBeenCalledWith(err);
   });
 
+  it('should deploy when "deactivated: true" is found in skyuxconfig', async () => {
+    assetsMock.getDistAssets.and.returnValue([]);
+    assetsMock.getEmittedAssets.and.returnValue([]);
+
+    const settings = {
+      azureStorageAccessKey: 'MOCK_ACCESS_KEY',
+      name: 'my-app',
+      version: 'foobar',
+      skyuxConfig: { deactivated: true },
+      packageConfig: {},
+    };
+
+    await lib(settings);
+
+    expect(deploySpaMock).toHaveBeenCalledWith(settings);
+  });
+
   describe('when isStaticClient = false', () => {
     it('should call deploySpa if registerAssetsToBlob is successful', async () => {
       const settings = {
