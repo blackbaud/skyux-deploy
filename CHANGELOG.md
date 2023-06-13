@@ -1,3 +1,7 @@
+# 2.4.0 (2023-06-13)
+
+- Added ability to deactivate a SPA by its configuration file. [#94](https://github.com/blackbaud/skyux-deploy/pull/94)
+
 # 2.3.0 (2023-03-13)
 
 - Added `--assetsGlob` option. [#92](https://github.com/blackbaud/skyux-deploy/pull/92)
